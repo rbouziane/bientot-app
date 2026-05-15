@@ -1,0 +1,73 @@
+{
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "save": "Save",
+    "edit": "Edit",
+    "share": "Share",
+    "close": "Close",
+    "back": "Back",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "premium": "Premium",
+    "free": "Free"
+  },
+  "date": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "daysUnit": "days",
+    "monthsUnit": "months",
+    "yearsUnit": "years",
+    "yearsUnitOne": "year",
+    "daysAgoBig": "{count} ago",
+    "daysAgoUnit": "day",
+    "daysAgoUnitOther": "days",
+    "yearlySuffix": "every year",
+    "monthlySuffix": "every month",
+    "weeklySuffix": "every week"
+  },
+  "events": {
+    "title": "Bientôt",
+    "activeCount": "{count} active countdown",
+    "activeCountOther": "{count} active countdowns",
+    "tabActive": "Active",
+    "tabPassed": "Past",
+    "emptyTitle": "No dates yet",
+    "emptySubtitle": "Add your first date — a birthday, a trip, a deadline.",
+    "emptyCta": "Create my first date",
+    "freeLimitTitle": "You've reached the Free limit",
+    "freeLimitSubtitle": "Go Premium to add as many dates as you want",
+    "freeLimitCta": "Go Premium · {price}",
+    "addEvent": "Add a date",
+    "passedHeaderThisMonth": "This month",
+    "passedHeaderEarlierThisYear": "Earlier this year",
+    "passedHeaderOlder": "Older"
+  },
+  "detail": {
+    "soDays": "that's {days} days, {hours} hours",
+    "notes": "Notes",
+    "actionEdit": "Edit",
+    "actionWidget": "Widget",
+    "actionShare": "Share",
+    "actionDelete": "Delete",
+    "todayBig": "It's today"
+  },
+  "error": {
+    "network": "No internet connection",
+    "event": {
+      "notFound": "Event not found",
+      "create": "Could not create the event",
+      "update": "Could not update the event",
+      "delete": "Could not delete the event"
+    }
+  },
+  "success": {
+    "event": {
+      "created": "Date created",
+      "updated": "Date updated",
+      "deleted": "Date deleted"
+    }
+  }
+}

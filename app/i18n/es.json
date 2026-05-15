@@ -1,0 +1,73 @@
+{
+  "common": {
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "share": "Compartir",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "retry": "Reintentar",
+    "loading": "Cargando…",
+    "premium": "Premium",
+    "free": "Gratuito"
+  },
+  "date": {
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "yesterday": "Ayer",
+    "daysUnit": "días",
+    "monthsUnit": "meses",
+    "yearsUnit": "años",
+    "yearsUnitOne": "año",
+    "daysAgoBig": "Hace {count}",
+    "daysAgoUnit": "día",
+    "daysAgoUnitOther": "días",
+    "yearlySuffix": "cada año",
+    "monthlySuffix": "cada mes",
+    "weeklySuffix": "cada semana"
+  },
+  "events": {
+    "title": "Bientôt",
+    "activeCount": "{count} cuenta atrás activa",
+    "activeCountOther": "{count} cuentas atrás activas",
+    "tabActive": "Activos",
+    "tabPassed": "Pasados",
+    "emptyTitle": "Aún no hay fechas",
+    "emptySubtitle": "Añade tu primera fecha — un cumpleaños, un viaje, una entrega.",
+    "emptyCta": "Crear mi primera fecha",
+    "freeLimitTitle": "Has alcanzado el límite Free",
+    "freeLimitSubtitle": "Hazte Premium para añadir todas las fechas que quieras",
+    "freeLimitCta": "Pasar a Premium · {price}",
+    "addEvent": "Añadir una fecha",
+    "passedHeaderThisMonth": "Este mes",
+    "passedHeaderEarlierThisYear": "Antes este año",
+    "passedHeaderOlder": "Más antiguo"
+  },
+  "detail": {
+    "soDays": "es decir {days} días, {hours} horas",
+    "notes": "Notas",
+    "actionEdit": "Editar",
+    "actionWidget": "Widget",
+    "actionShare": "Compartir",
+    "actionDelete": "Eliminar",
+    "todayBig": "Es hoy"
+  },
+  "error": {
+    "network": "Sin conexión a internet",
+    "event": {
+      "notFound": "Evento no encontrado",
+      "create": "No se pudo crear el evento",
+      "update": "No se pudo actualizar el evento",
+      "delete": "No se pudo eliminar el evento"
+    }
+  },
+  "success": {
+    "event": {
+      "created": "Fecha creada",
+      "updated": "Fecha actualizada",
+      "deleted": "Fecha eliminada"
+    }
+  }
+}

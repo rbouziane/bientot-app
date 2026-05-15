@@ -1,0 +1,73 @@
+{
+  "common": {
+    "confirm": "Valider",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "share": "Partager",
+    "close": "Fermer",
+    "back": "Retour",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "premium": "Premium",
+    "free": "Gratuit"
+  },
+  "date": {
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain",
+    "yesterday": "Hier",
+    "daysUnit": "jours",
+    "monthsUnit": "mois",
+    "yearsUnit": "ans",
+    "yearsUnitOne": "an",
+    "daysAgoBig": "Il y a {count}",
+    "daysAgoUnit": "jour",
+    "daysAgoUnitOther": "jours",
+    "yearlySuffix": "chaque année",
+    "monthlySuffix": "chaque mois",
+    "weeklySuffix": "chaque semaine"
+  },
+  "events": {
+    "title": "Bientôt",
+    "activeCount": "{count} compte à rebours actif",
+    "activeCountOther": "{count} comptes à rebours actifs",
+    "tabActive": "Actifs",
+    "tabPassed": "Passés",
+    "emptyTitle": "Aucune date pour l'instant",
+    "emptySubtitle": "Ajoutez votre première date — un anniversaire, un voyage, une deadline.",
+    "emptyCta": "Créer ma première date",
+    "freeLimitTitle": "Vous avez atteint la limite Free",
+    "freeLimitSubtitle": "Passez Premium pour ajouter autant de dates que vous voulez",
+    "freeLimitCta": "Passer Premium · {price}",
+    "addEvent": "Ajouter une date",
+    "passedHeaderThisMonth": "Ce mois-ci",
+    "passedHeaderEarlierThisYear": "Plus tôt cette année",
+    "passedHeaderOlder": "Plus ancien"
+  },
+  "detail": {
+    "soDays": "soit {days} jours, {hours} heures",
+    "notes": "Notes",
+    "actionEdit": "Modifier",
+    "actionWidget": "Widget",
+    "actionShare": "Partager",
+    "actionDelete": "Supprimer",
+    "todayBig": "C'est aujourd'hui"
+  },
+  "error": {
+    "network": "Pas de connexion internet",
+    "event": {
+      "notFound": "Événement introuvable",
+      "create": "Impossible de créer l'événement",
+      "update": "Impossible de mettre à jour l'événement",
+      "delete": "Impossible de supprimer l'événement"
+    }
+  },
+  "success": {
+    "event": {
+      "created": "Date créée",
+      "updated": "Date mise à jour",
+      "deleted": "Date supprimée"
+    }
+  }
+}
