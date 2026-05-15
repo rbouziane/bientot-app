@@ -1,0 +1,6 @@
+export enum RECURRENCE {
+  NONE = 'NONE',
+  YEARLY = 'YEARLY',
+  MONTHLY = 'MONTHLY',
+  WEEKLY = 'WEEKLY',
+}
