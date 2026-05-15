@@ -1,5 +1,4 @@
 import { CommonActions } from '@react-navigation/native';
-
 import { navigationRef } from './navigation-utilities';
 
 class NavigatorUtils {
@@ -22,7 +21,12 @@ class NavigatorUtils {
       return;
     }
 
-    navigationRef.dispatch(CommonActions.reset({ index: 0, routes: [{ name: navigationRef.getRootState().routes[0].name }] }));
+    navigationRef.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: navigationRef.getRootState().routes[0].name }],
+      }),
+    );
   }
 
   static reset(name: string, params?: Record<string, unknown>) {

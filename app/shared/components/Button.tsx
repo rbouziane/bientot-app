@@ -1,7 +1,6 @@
 import { memo, ReactNode, useCallback } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
 import { colors, radius, shadows, spacing, typography } from '~shared/theme';
 import { darken, lighten } from '~shared/utils/colorUtils';
 
@@ -32,9 +31,10 @@ const Button = memo((props: Props) => {
     props.onPress();
   }, [props.isDisabled, props.onPress]);
 
-  const colorGradient = props.color != null
-    ? [lighten(props.color, 0.08), props.color, darken(props.color, 0.06)]
-    : INK_COLORS;
+  const colorGradient =
+    props.color != null
+      ? [lighten(props.color, 0.08), props.color, darken(props.color, 0.06)]
+      : INK_COLORS;
 
   const textColor = isGlass ? colors.textPrimary : colors.textOnDark;
 

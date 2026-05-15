@@ -1,7 +1,6 @@
 import { differenceInCalendarDays, format } from 'date-fns';
 import { enUS, es, fr } from 'date-fns/locale';
 import type { Locale } from 'date-fns';
-
 import { getCurrentLocale, translate } from '~i18n/translate';
 
 const DATE_FNS_LOCALES: Record<string, Locale> = {
@@ -47,9 +46,10 @@ export const formatCountdown = (
 
     return {
       big: translate('date.daysAgoBig', { count: abs }),
-      unit: abs === 1
-        ? translate('date.daysAgoUnit')
-        : translate('date.daysAgoUnitOther'),
+      unit:
+        abs === 1
+          ? translate('date.daysAgoUnit')
+          : translate('date.daysAgoUnitOther'),
       isToday: false,
       isPast: true,
       isSoon: false,
@@ -89,10 +89,13 @@ export const formatCountdown = (
   }
 
   const years = days / 365;
-  const formatted = years.toFixed(1).replace('.', getCurrentLocale() === 'en' ? '.' : ',');
-  const unit = Math.round(years * 10) === 10
-    ? translate('date.yearsUnitOne')
-    : translate('date.yearsUnit');
+  const formatted = years
+    .toFixed(1)
+    .replace('.', getCurrentLocale() === 'en' ? '.' : ',');
+  const unit =
+    Math.round(years * 10) === 10
+      ? translate('date.yearsUnitOne')
+      : translate('date.yearsUnit');
 
   return {
     big: formatted,
@@ -141,11 +144,15 @@ export const progressFill = (iso: string, now: Date = new Date()): number => {
 };
 
 export const formatLongDate = (iso: string): string => {
-  return format(new Date(iso), 'EEEE d MMMM', { locale: localeForCurrentLanguage() });
+  return format(new Date(iso), 'EEEE d MMMM', {
+    locale: localeForCurrentLanguage(),
+  });
 };
 
 export const formatShortDate = (iso: string): string => {
-  return format(new Date(iso), 'EEE d MMM', { locale: localeForCurrentLanguage() });
+  return format(new Date(iso), 'EEE d MMM', {
+    locale: localeForCurrentLanguage(),
+  });
 };
 
 export const formatTime = (iso: string): string => {

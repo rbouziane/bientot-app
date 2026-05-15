@@ -1,10 +1,8 @@
 import { memo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
 import { STACK_NAME } from '~shared/constants/Screen';
-import TabBarIcon from '~shared/components/TabBarIcon';
+import NativeIcon from '~shared/components/NativeIcon';
 import { colors } from '~shared/theme';
-
 import HomeStack from './HomeStack';
 import SettingsStack from './SettingsStack';
 import WidgetsStack from './WidgetsStack';
@@ -18,11 +16,22 @@ export type TabNavigatorParamList = {
 const Tab = createBottomTabNavigator<TabNavigatorParamList>();
 
 const renderHomeIcon = ({ color, size }: { color: string; size: number }) => (
-  <TabBarIcon iosName="list.bullet" androidName="list" size={size} color={color} />
+  <NativeIcon
+    iosName="list.bullet"
+    androidName="list"
+    size={size}
+    color={color}
+  />
 );
 
-const renderWidgetsIcon = ({ color, size }: { color: string; size: number }) => (
-  <TabBarIcon
+const renderWidgetsIcon = ({
+  color,
+  size,
+}: {
+  color: string;
+  size: number;
+}) => (
+  <NativeIcon
     iosName="rectangle.on.rectangle"
     androidName="widgets"
     size={size}
@@ -30,8 +39,14 @@ const renderWidgetsIcon = ({ color, size }: { color: string; size: number }) => 
   />
 );
 
-const renderSettingsIcon = ({ color, size }: { color: string; size: number }) => (
-  <TabBarIcon
+const renderSettingsIcon = ({
+  color,
+  size,
+}: {
+  color: string;
+  size: number;
+}) => (
+  <NativeIcon
     iosName="gearshape.fill"
     androidName="settings"
     size={size}

@@ -2,7 +2,6 @@ import { memo } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { SFSymbol } from 'react-native-sfsymbols';
 import { MaterialIcons } from '@react-native-vector-icons/material-icons';
-
 import { resolveIconNativeName } from '~shared/utils/iconResolver';
 import { IconRef } from '~features/events/types/IconRef';
 

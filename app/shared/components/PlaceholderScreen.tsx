@@ -1,10 +1,9 @@
-// TODO: composant d'échafaudage temporaire — à supprimer une fois tous les
-// écrans implémentés (étapes 6 à 9). Aucun écran final ne doit l'utiliser.
+// TODO: temporary scaffolding component — remove once all screens are
+// implemented (steps 6 to 9). No final screen should rely on it.
 
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { colors, spacing, typography } from '~shared/theme';
 import ScreenContainer from './ScreenContainer';
 

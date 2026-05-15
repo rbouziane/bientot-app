@@ -1,5 +1,4 @@
 import * as Keychain from 'react-native-keychain';
-
 import crashlytics from '~shared/services/crashlytics';
 import { logError } from '~shared/services/logger';
 
@@ -14,7 +13,7 @@ const generateRandomKey = (): string => {
   crypto.getRandomValues(bytes);
 
   return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, '0'))
+    .map(b => b.toString(16).padStart(2, '0'))
     .join('');
 };
 

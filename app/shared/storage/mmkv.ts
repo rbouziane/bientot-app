@@ -1,8 +1,6 @@
 import { createMMKV, MMKV } from 'react-native-mmkv';
-
 import crashlytics from '~shared/services/crashlytics';
 import { logError } from '~shared/services/logger';
-
 import { getEncryptionKey } from './encryption';
 
 const MODEL_VERSION = 1;
@@ -25,7 +23,7 @@ const migrateData = (from: MMKV, to: MMKV) => {
 
 let resolveSecureReady: (() => void) | null = null;
 
-export const isMMKVSecureReadyPromise = new Promise<void>((resolve) => {
+export const isMMKVSecureReadyPromise = new Promise<void>(resolve => {
   resolveSecureReady = resolve;
 });
 

@@ -1,6 +1,5 @@
 import { COLOR_KEY } from '~shared/constants/ColorKey';
 import { ICON_CONCEPT } from '~shared/constants/IconConcept';
-
 import { RECURRENCE } from '../enums/Recurrence';
 import { Event } from '../types/Event';
 import { IconRef } from '../types/IconRef';

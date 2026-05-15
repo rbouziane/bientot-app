@@ -1,10 +1,5 @@
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-
-import {
-  getMMKV,
-  getModelVersion,
-  isMMKVSecureReadyPromise,
-} from './mmkv';
+import { getMMKV, getModelVersion, isMMKVSecureReadyPromise } from './mmkv';
 
 type CacheEntry = {
   data: string;

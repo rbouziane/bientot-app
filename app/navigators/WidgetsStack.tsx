@@ -1,9 +1,7 @@
 import { memo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import { SCREEN_NAME } from '~shared/constants/Screen';
 import WidgetsConfigScreen from '~features/widgets/screens/widgets-config-screen';
-
 import { HIDE_HEADER } from './screen-options';
 
 export type WidgetsStackParamList = {
@@ -18,7 +16,10 @@ const WidgetsStack = memo(() => {
       initialRouteName={SCREEN_NAME.WIDGETS_CONFIG}
       screenOptions={HIDE_HEADER}
     >
-      <Stack.Screen name={SCREEN_NAME.WIDGETS_CONFIG} component={WidgetsConfigScreen} />
+      <Stack.Screen
+        name={SCREEN_NAME.WIDGETS_CONFIG}
+        component={WidgetsConfigScreen}
+      />
     </Stack.Navigator>
   );
 });

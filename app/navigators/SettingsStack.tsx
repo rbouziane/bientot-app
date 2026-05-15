@@ -1,9 +1,7 @@
 import { memo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import { SCREEN_NAME } from '~shared/constants/Screen';
 import SettingsScreen from '~features/settings/screens/settings-screen';
-
 import { HIDE_HEADER } from './screen-options';
 
 export type SettingsStackParamList = {

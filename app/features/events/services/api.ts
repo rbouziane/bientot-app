@@ -1,10 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-
 import { STORAGE_KEY } from '~shared/constants/Storage';
 import crashlytics from '~shared/services/crashlytics';
 import { logError } from '~shared/services/logger';
 import { getMMKV, isMMKVSecureReadyPromise } from '~shared/storage/mmkv';
-
 import { Event } from '../types/Event';
 import { EventInput } from '../types/EventInput';
 import { eventSerializer } from './serializer';
@@ -44,7 +42,7 @@ export const getEventsApi = async (): Promise<EventApi[]> => {
 export const getEventApi = async (eventId: string): Promise<EventApi> => {
   await isMMKVSecureReadyPromise;
   const events = readRaw();
-  const event = events.find((e) => e.id === eventId);
+  const event = events.find(e => e.id === eventId);
 
   if (event == null) {
     throw new Error(`Event ${eventId} not found`);
@@ -83,7 +81,7 @@ export const updateEventApi = async (
 ): Promise<EventApi> => {
   await isMMKVSecureReadyPromise;
   const events = readRaw();
-  const index = events.findIndex((e) => e.id === eventId);
+  const index = events.findIndex(e => e.id === eventId);
 
   if (index === -1) {
     throw new Error(`Event ${eventId} not found`);
@@ -94,9 +92,10 @@ export const updateEventApi = async (
     ...previous,
     title: input.title,
     target_date: input.targetDate,
-    icon: input.icon.family === 'emoji'
-      ? { family: 'emoji', value: input.icon.value }
-      : { family: 'concept', concept: input.icon.concept },
+    icon:
+      input.icon.family === 'emoji'
+        ? { family: 'emoji', value: input.icon.value }
+        : { family: 'concept', concept: input.icon.concept },
     color_key: input.colorKey,
     recurrence: input.recurrence,
     notes: input.notes,
@@ -113,7 +112,7 @@ export const updateEventApi = async (
 export const deleteEventApi = async (eventId: string): Promise<void> => {
   await isMMKVSecureReadyPromise;
   const events = readRaw();
-  const filtered = events.filter((e) => e.id !== eventId);
+  const filtered = events.filter(e => e.id !== eventId);
 
   writeRaw(filtered);
 };

@@ -10,7 +10,7 @@ type Props = {
   color: string;
 };
 
-const TabBarIcon = memo((props: Props) => {
+const NativeIcon = memo((props: Props) => {
   if (Platform.OS === 'ios') {
     return (
       <SFSymbol
@@ -34,4 +34,4 @@ const TabBarIcon = memo((props: Props) => {
   );
 });
 
-export default TabBarIcon;
+export default NativeIcon;

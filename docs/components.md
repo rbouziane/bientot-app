@@ -13,9 +13,26 @@ Règles d'écriture des composants React Native, style général du code, et ske
 - Props typées via un `type Props = { ... }` local
 - **Jamais déstructurer les props** — toujours `props.xxx` pour la traçabilité
 - **Pas de valeurs par défaut sur les props** — props optionnelles avec `?` uniquement
-- `StyleSheet.create()` en bas du fichier — **jamais de styles inline**
+- `StyleSheet.create()` en bas du fichier — **jamais de styles inline statiques**
 - Valeurs de thème uniquement depuis `~shared/theme/theme`
 - `export default` à la **toute fin** du fichier
+
+### Styles inline pour valeurs dynamiques
+
+La règle "pas de styles inline" cible les **objets de style entiers en dur**. Quand une valeur dépend d'une prop ou du state (couleur tirée de la palette, taille calculée, position…), il est attendu de la passer inline **sur un composant natif RN** (`<View>`, `<Text>`, `<Pressable>`, `<ScrollView>`…) ou sur un composant qui accepte `style: StyleProp<...>`.
+
+Le pattern canonique est l'array `[styles.foo, { propDynamique }]` : la base statique reste dans `StyleSheet`, seule la valeur variable est inline.
+
+```tsx
+// ✅ Dynamique sur composant natif : autorisé
+<View style={[styles.card, { backgroundColor: color.light }]} />
+<Text style={[styles.title, { color: themedColor }]}>{props.label}</Text>
+
+// ❌ Style entier en dur inline
+<View style={{ padding: 16, borderRadius: 8, backgroundColor: '#FFF' }} />
+```
+
+Pour un composant **custom** (non-natif), n'expose un prop `style` que si nécessaire. Préférer typer un prop sémantique (`tone`, `variant`, `color`) plutôt que laisser passer un style brut.
 
 ### Ordre des props
 
@@ -54,6 +71,56 @@ type Props = {
   title: string;
   children: ReactNode;
 };
+```
+
+### Un fichier = un composant (et ses sous-composants privés)
+
+Règle générale : **un fichier exporte un seul composant public**. Le `export default` à la fin du fichier est ce composant.
+
+**Exception autorisée** : des sous-composants `memo()` peuvent vivre dans le même fichier **uniquement** s'ils sont :
+
+1. Utilisés exclusivement par le composant exporté (jamais consommés ailleurs).
+2. Suffisamment petits pour ne pas mériter un fichier à part.
+3. Au service de la lisibilité du composant principal (ex : décomposer une cellule de liste, isoler un sous-bloc visuel qui se répète localement).
+
+Dès qu'un sous-composant est consommé ailleurs ou grossit (> ~50 lignes, plusieurs hooks, logique propre), il sort dans son propre fichier.
+
+#### Ordre dans le fichier quand il y a des sous-composants
+
+Quand le fichier contient des sous-composants, **le composant principal est en bas, juste avant `export default`**. Les sous-composants sont déclarés au-dessus, dans leur ordre d'utilisation. Raison : on lit le fichier de haut en bas, et le composant principal compose les briques définies au-dessus — on n'a pas besoin de "remonter" pour comprendre une référence.
+
+```tsx
+// ✅
+type RowProps = { /* … */ };
+
+const Row = memo((props: RowProps) => {
+  return <View />;
+});
+
+type Props = { /* … */ };
+
+const MyList = memo((props: Props) => {
+  return (
+    <View>
+      <Row {...} />
+    </View>
+  );
+});
+
+const styles = StyleSheet.create({ /* … */ });
+
+export default MyList;
+```
+
+```tsx
+// ❌ parent en haut, sous-composant en bas
+const MyList = memo((props: Props) => {
+  return <Row />;
+});
+
+const Row = memo(() => <View />);
+
+export default MyList;
 ```
 
 ### Pattern type
@@ -249,10 +316,13 @@ Le code doit **respirer**. Lignes vides obligatoires aux endroits suivants :
 5. **Entre les blocs logiques** d'une fonction (déclarations / transformations / retour)
 6. **Avant et après `StyleSheet.create()`**
 
+**Pas de ligne vide entre les imports.** Tous les `import` sont collés les uns aux autres, peu importe leur origine (externe, alias `~`, relatif). Le bloc imports est compact, suivi d'une seule ligne vide avant le code.
+
+**Pas de ligne vide à l'intérieur du JSX.** Les éléments frères dans un `return (...)` sont collés. Pas de saut de ligne entre deux `<View>`, entre une condition `{cond && (...)}` et le bloc suivant, etc. La structure visuelle vient de l'indentation, pas des blancs.
+
 ```ts
 import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-
 import { colors } from '~shared/theme/theme';
 
 type Props = {

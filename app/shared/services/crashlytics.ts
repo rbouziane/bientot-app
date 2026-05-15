@@ -1,3 +1,8 @@
+// TODO: stub — temporary wrapper that only logs in dev. Wire it up to
+// @react-native-firebase/crashlytics once the Firebase project is
+// configured (infra side). Keep the public API (recordError, log) so
+// call-sites don't break.
+
 type RecordableError = Error | { message: string; name?: string };
 
 const recordError = (error: RecordableError, context?: string) => {

@@ -1,11 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
 import { CACHE_TIME } from '~shared/constants/CacheTime';
 import { QUERY_KEY } from '~shared/constants/QueryKey';
 import crashlytics from '~shared/services/crashlytics';
 import { logError } from '~shared/services/logger';
 import { translate } from '~i18n/translate';
-
 import { Event } from '../types/Event';
 import { EventInput } from '../types/EventInput';
 import {
@@ -92,10 +90,11 @@ export const useCreateEventMutation = () => {
   } = useMutation({
     mutationFn: (input: EventInput) => createEventApi(input),
 
-    onMutate: async (input) => {
+    onMutate: async input => {
       await queryClient.cancelQueries({ queryKey: [QUERY_KEY.EVENTS] });
 
-      const previousEvents = queryClient.getQueryData<Event[]>([QUERY_KEY.EVENTS]) ?? [];
+      const previousEvents =
+        queryClient.getQueryData<Event[]>([QUERY_KEY.EVENTS]) ?? [];
 
       const optimistic: Event = {
         id: `temp-${Date.now()}`,
@@ -150,11 +149,14 @@ export const useUpdateEventMutation = () => {
     mutationFn: (params: UpdateEventParams) =>
       updateEventApi(params.eventId, params.input),
 
-    onMutate: async (params) => {
+    onMutate: async params => {
       await queryClient.cancelQueries({ queryKey: [QUERY_KEY.EVENTS] });
-      await queryClient.cancelQueries({ queryKey: [QUERY_KEY.EVENT, params.eventId] });
+      await queryClient.cancelQueries({
+        queryKey: [QUERY_KEY.EVENT, params.eventId],
+      });
 
-      const previousEvents = queryClient.getQueryData<Event[]>([QUERY_KEY.EVENTS]) ?? [];
+      const previousEvents =
+        queryClient.getQueryData<Event[]>([QUERY_KEY.EVENTS]) ?? [];
       const previousEvent = queryClient.getQueryData<Event>([
         QUERY_KEY.EVENT,
         params.eventId,
@@ -175,7 +177,7 @@ export const useUpdateEventMutation = () => {
 
       queryClient.setQueryData<Event[]>(
         [QUERY_KEY.EVENTS],
-        previousEvents.map((e) => (e.id === params.eventId ? futureEvent : e)),
+        previousEvents.map(e => (e.id === params.eventId ? futureEvent : e)),
       );
       queryClient.setQueryData([QUERY_KEY.EVENT, params.eventId], futureEvent);
 
@@ -200,7 +202,9 @@ export const useUpdateEventMutation = () => {
 
     onSettled: (_data, _error, params) => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY.EVENTS] });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.EVENT, params.eventId] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY.EVENT, params.eventId],
+      });
     },
   });
 
@@ -221,14 +225,15 @@ export const useDeleteEventMutation = () => {
   } = useMutation({
     mutationFn: (eventId: string) => deleteEventApi(eventId),
 
-    onMutate: async (eventId) => {
+    onMutate: async eventId => {
       await queryClient.cancelQueries({ queryKey: [QUERY_KEY.EVENTS] });
 
-      const previousEvents = queryClient.getQueryData<Event[]>([QUERY_KEY.EVENTS]) ?? [];
+      const previousEvents =
+        queryClient.getQueryData<Event[]>([QUERY_KEY.EVENTS]) ?? [];
 
       queryClient.setQueryData<Event[]>(
         [QUERY_KEY.EVENTS],
-        previousEvents.filter((e) => e.id !== eventId),
+        previousEvents.filter(e => e.id !== eventId),
       );
 
       return { previousEvents };

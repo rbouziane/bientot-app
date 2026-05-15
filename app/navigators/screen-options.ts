@@ -1,5 +1,4 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-
 import { colors } from '~shared/theme';
 
 type ScreenOptionsParams = {

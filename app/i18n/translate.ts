@@ -1,6 +1,5 @@
 import { I18n } from 'i18n-js';
 import * as RNLocalize from 'react-native-localize';
-
 import en from './en.json';
 import es from './es.json';
 import fr from './fr.json';
@@ -26,7 +25,10 @@ const detectedLocale = (): SupportedLocale => {
 
 i18n.locale = detectedLocale();
 
-export const translate = (key: string, params?: Record<string, unknown>): string => {
+export const translate = (
+  key: string,
+  params?: Record<string, unknown>,
+): string => {
   return i18n.t(key, params);
 };
 

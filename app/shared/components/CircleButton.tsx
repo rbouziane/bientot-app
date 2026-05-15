@@ -1,7 +1,6 @@
 import { memo, ReactNode, useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
 import { colors, shadows } from '~shared/theme';
 
 type Tone = 'ink' | 'soft' | 'glass';
@@ -54,9 +53,8 @@ const CircleButton = memo((props: Props) => {
     );
   }
 
-  const bg = tone === 'glass'
-    ? colors.surfaceTranslucentStrong
-    : colors.surfacePressed;
+  const containerColor =
+    tone === 'glass' ? colors.surfaceTranslucentStrong : colors.surfacePressed;
 
   return (
     <Pressable
@@ -64,7 +62,7 @@ const CircleButton = memo((props: Props) => {
       style={({ pressed }) => [
         styles.root,
         containerStyle,
-        { backgroundColor: bg },
+        { backgroundColor: containerColor },
         pressed && styles.pressed,
       ]}
     >

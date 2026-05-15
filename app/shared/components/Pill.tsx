@@ -1,6 +1,5 @@
 import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
-
 import { colors, radius, spacing } from '~shared/theme';
 
 type Props = {
@@ -19,21 +18,21 @@ const Pill = memo((props: Props) => {
     props.onPress();
   }, [props.onPress]);
 
-  const bg = props.isActive
+  const backgroundColor = props.isActive
     ? props.activeColor ?? colors.textPrimary
     : colors.surfaceSoft;
-  const fg = props.isActive ? colors.textOnDark : colors.textPrimary;
+  const labelColor = props.isActive ? colors.textOnDark : colors.textPrimary;
 
   return (
     <Pressable
       onPress={handlePress}
       style={({ pressed }) => [
         styles.root,
-        { backgroundColor: bg },
+        { backgroundColor },
         pressed && styles.pressed,
       ]}
     >
-      <Text style={[styles.label, { color: fg }]}>{props.label}</Text>
+      <Text style={[styles.label, { color: labelColor }]}>{props.label}</Text>
     </Pressable>
   );
 });
