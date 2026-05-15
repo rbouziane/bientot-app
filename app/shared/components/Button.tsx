@@ -30,7 +30,7 @@ const Button = memo((props: Props) => {
     }
 
     props.onPress();
-  }, [props]);
+  }, [props.isDisabled, props.onPress]);
 
   const colorGradient = props.color != null
     ? [lighten(props.color, 0.08), props.color, darken(props.color, 0.06)]

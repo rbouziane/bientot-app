@@ -17,7 +17,7 @@ const Pill = memo((props: Props) => {
     }
 
     props.onPress();
-  }, [props]);
+  }, [props.onPress]);
 
   const bg = props.isActive
     ? props.activeColor ?? colors.textPrimary

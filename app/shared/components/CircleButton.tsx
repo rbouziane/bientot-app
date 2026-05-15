@@ -25,7 +25,7 @@ const CircleButton = memo((props: Props) => {
     }
 
     props.onPress();
-  }, [props]);
+  }, [props.onPress]);
 
   const radius = size / 2;
   const containerStyle = { width: size, height: size, borderRadius: radius };
