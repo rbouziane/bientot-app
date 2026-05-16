@@ -1,4 +1,4 @@
-import { differenceInCalendarDays, format } from 'date-fns';
+import { differenceInCalendarDays, differenceInHours, format } from 'date-fns';
 import { enUS, es, fr } from 'date-fns/locale';
 import type { Locale } from 'date-fns';
 import { getCurrentLocale, translate } from '~i18n/translate';
@@ -23,6 +23,10 @@ export type CountdownDisplay = {
 
 export const daysFromNow = (iso: string, now: Date = new Date()): number => {
   return differenceInCalendarDays(new Date(iso), now);
+};
+
+export const hoursFromNow = (iso: string, now: Date = new Date()): number => {
+  return differenceInHours(new Date(iso), now);
 };
 
 export const formatCountdown = (

@@ -54,6 +54,34 @@
     "actionDelete": "Supprimer",
     "todayBig": "C'est aujourd'hui"
   },
+  "recurrence": {
+    "none": "Aucune",
+    "yearly": "Annuelle",
+    "monthly": "Mensuelle",
+    "weekly": "Hebdo"
+  },
+  "picker": {
+    "colorTitle": "Couleur",
+    "iconTitle": "Icône",
+    "free": "Gratuites",
+    "premium": "Premium",
+    "emojiLabel": "Ou tape ton emoji"
+  },
+  "form": {
+    "titlePlaceholder": "Nom de l'événement",
+    "fieldDate": "Date",
+    "fieldTime": "Heure",
+    "fieldRecurrence": "Récurrence",
+    "fieldColor": "Couleur",
+    "fieldIcon": "Icône",
+    "fieldNotes": "Notes",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "addTime": "Ajouter une heure",
+    "removeTime": "Sans heure",
+    "createTitle": "Nouvelle date",
+    "editTitle": "Modifier"
+  },
   "error": {
     "network": "Pas de connexion internet",
     "event": {

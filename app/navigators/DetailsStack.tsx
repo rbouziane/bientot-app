@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SCREEN_NAME } from '~shared/constants/Screen';
 import AboutScreen from '~features/about/screens/about-screen';
 import ColorPickerScreen from '~features/events/screens/color-picker-screen';
+import DeleteConfirmScreen from '~features/events/screens/delete-confirm-screen';
 import EventCreateScreen from '~features/events/screens/event-create-screen';
 import EventDetailScreen from '~features/events/screens/event-detail-screen';
 import EventEditScreen from '~features/events/screens/event-edit-screen';
@@ -13,6 +14,7 @@ import IconPickerScreen from '~features/events/screens/icon-picker-screen';
 import LanguageScreen from '~features/settings/screens/language-screen';
 import NotificationsScreen from '~features/settings/screens/notifications-screen';
 import PaywallScreen from '~features/paywall/screens/paywall-screen';
+import ShareCardScreen from '~features/events/screens/share-card-screen';
 import { HIDE_HEADER } from './screen-options';
 
 export type DetailsStackParamList = {
@@ -28,6 +30,8 @@ export type DetailsStackParamList = {
   [SCREEN_NAME.ABOUT]: undefined;
   [SCREEN_NAME.HELP]: undefined;
   [SCREEN_NAME.GROUPS]: undefined;
+  [SCREEN_NAME.SHARE_CARD]: { eventId: string };
+  [SCREEN_NAME.DELETE_CONFIRM]: { eventId: string };
 };
 
 const Stack = createNativeStackNavigator<DetailsStackParamList>();
@@ -68,6 +72,11 @@ const DetailsStack = memo(() => {
       <Stack.Screen name={SCREEN_NAME.ABOUT} component={AboutScreen} />
       <Stack.Screen name={SCREEN_NAME.HELP} component={HelpScreen} />
       <Stack.Screen name={SCREEN_NAME.GROUPS} component={GroupsScreen} />
+      <Stack.Screen name={SCREEN_NAME.SHARE_CARD} component={ShareCardScreen} />
+      <Stack.Screen
+        name={SCREEN_NAME.DELETE_CONFIRM}
+        component={DeleteConfirmScreen}
+      />
     </Stack.Navigator>
   );
 });

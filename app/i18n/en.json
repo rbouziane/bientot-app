@@ -54,6 +54,34 @@
     "actionDelete": "Delete",
     "todayBig": "It's today"
   },
+  "recurrence": {
+    "none": "None",
+    "yearly": "Yearly",
+    "monthly": "Monthly",
+    "weekly": "Weekly"
+  },
+  "picker": {
+    "colorTitle": "Color",
+    "iconTitle": "Icon",
+    "free": "Free",
+    "premium": "Premium",
+    "emojiLabel": "Or type your emoji"
+  },
+  "form": {
+    "titlePlaceholder": "Event name",
+    "fieldDate": "Date",
+    "fieldTime": "Time",
+    "fieldRecurrence": "Recurrence",
+    "fieldColor": "Color",
+    "fieldIcon": "Icon",
+    "fieldNotes": "Notes",
+    "create": "Create",
+    "update": "Update",
+    "addTime": "Add a time",
+    "removeTime": "All day",
+    "createTitle": "New date",
+    "editTitle": "Edit"
+  },
   "error": {
     "network": "No internet connection",
     "event": {

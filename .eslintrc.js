@@ -7,5 +7,10 @@ module.exports = {
     // in practice and the rule has no option to accept it without
     // destructuring, so it is disabled.
     'react-hooks/exhaustive-deps': 'off',
+    // The project explicitly allows inline styles for dynamic values on
+    // native RN components (cf. docs/components.md → "Styles inline pour
+    // valeurs dynamiques"). The rule flags every inline style indiscriminately,
+    // so it stays off.
+    'react-native/no-inline-styles': 'off',
   },
 };

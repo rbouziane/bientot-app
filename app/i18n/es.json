@@ -54,6 +54,34 @@
     "actionDelete": "Eliminar",
     "todayBig": "Es hoy"
   },
+  "recurrence": {
+    "none": "Ninguna",
+    "yearly": "Anual",
+    "monthly": "Mensual",
+    "weekly": "Semanal"
+  },
+  "picker": {
+    "colorTitle": "Color",
+    "iconTitle": "Icono",
+    "free": "Gratuitos",
+    "premium": "Premium",
+    "emojiLabel": "O escribe tu emoji"
+  },
+  "form": {
+    "titlePlaceholder": "Nombre del evento",
+    "fieldDate": "Fecha",
+    "fieldTime": "Hora",
+    "fieldRecurrence": "Recurrencia",
+    "fieldColor": "Color",
+    "fieldIcon": "Icono",
+    "fieldNotes": "Notas",
+    "create": "Crear",
+    "update": "Actualizar",
+    "addTime": "Añadir una hora",
+    "removeTime": "Todo el día",
+    "createTitle": "Nueva fecha",
+    "editTitle": "Editar"
+  },
   "error": {
     "network": "Sin conexión a internet",
     "event": {

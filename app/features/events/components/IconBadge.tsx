@@ -28,11 +28,7 @@ const IconBadge = memo((props: Props) => {
         },
       ]}
     >
-      <EventIcon
-        icon={props.icon}
-        size={props.size * 0.55}
-        color={props.darkColor}
-      />
+      <EventIcon icon={props.icon} size={props.size * 0.55} />
     </View>
   );
 });
