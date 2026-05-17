@@ -63,24 +63,39 @@
   "picker": {
     "colorTitle": "Couleur",
     "iconTitle": "Icône",
-    "free": "Gratuites",
+    "free": "Essentielles",
     "premium": "Premium",
-    "emojiLabel": "Ou tape ton emoji"
+    "emojiTitle": "Emoji",
+    "emojiHint": "Tape n'importe quel emoji depuis ton clavier. Gratuit.",
+    "emojiPlaceholder": "🎂"
   },
   "form": {
     "titlePlaceholder": "Nom de l'événement",
+    "titleSection": "Titre",
+    "whenSection": "Quand",
+    "styleSection": "Style",
+    "remindersSection": "Rappels",
+    "plusSection": "Plus",
     "fieldDate": "Date",
     "fieldTime": "Heure",
     "fieldRecurrence": "Récurrence",
     "fieldColor": "Couleur",
     "fieldIcon": "Icône",
     "fieldNotes": "Notes",
+    "fieldGroup": "Groupe",
+    "notifyMe": "Me notifier",
+    "beforeEvent": "Avant l'événement",
+    "noTime": "—",
+    "charCount": "{count}/40",
     "create": "Créer",
-    "update": "Mettre à jour",
-    "addTime": "Ajouter une heure",
-    "removeTime": "Sans heure",
+    "update": "Enregistrer",
     "createTitle": "Nouvelle date",
     "editTitle": "Modifier"
+  },
+  "reminder": {
+    "oneWeek": "1 semaine",
+    "oneDay": "1 jour",
+    "dayOf": "Le jour J"
   },
   "error": {
     "network": "Pas de connexion internet",

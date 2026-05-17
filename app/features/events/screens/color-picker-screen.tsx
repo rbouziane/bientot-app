@@ -1,9 +1,10 @@
-import { memo, useCallback } from 'react';
+import { memo, ReactNode, useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NavigatorUtils from '~/navigators/NavigatorUtils';
 import CircleButton from '~shared/components/CircleButton';
 import ScreenContainer from '~shared/components/ScreenContainer';
+import SheetHeader from '~shared/components/SheetHeader';
 import UiIcon from '~shared/components/UiIcon';
 import { COLOR_KEY } from '~shared/constants/ColorKey';
 import {
@@ -12,7 +13,9 @@ import {
   PREMIUM_COLOR_KEYS,
 } from '~shared/constants/Palette';
 import { colors, spacing, typography } from '~shared/theme';
+import { formatCountdown } from '~shared/utils/date';
 import { translate } from '~i18n/translate';
+import ColorPickerPreview from '../components/ColorPickerPreview';
 import ColorSwatch from '../components/ColorSwatch';
 import { useEventFormDraft } from '../hooks/useEventFormDraft';
 
@@ -21,16 +24,20 @@ const IS_PREMIUM = true;
 
 type SectionProps = {
   title: string;
+  rightAccessory?: ReactNode;
   colorKeys: COLOR_KEY[];
   selectedKey: COLOR_KEY;
-  isPremium: boolean;
+  isLocked: boolean;
   onSelect: (colorKey: COLOR_KEY) => void;
 };
 
 const Section = memo((sectionProps: SectionProps) => {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{sectionProps.title}</Text>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{sectionProps.title}</Text>
+        {sectionProps.rightAccessory}
+      </View>
       <View style={styles.grid}>
         {sectionProps.colorKeys.map(colorKey => (
           <View key={colorKey} style={styles.gridCell}>
@@ -38,7 +45,7 @@ const Section = memo((sectionProps: SectionProps) => {
               colorKey={colorKey}
               palette={PALETTE[colorKey]}
               isSelected={sectionProps.selectedKey === colorKey}
-              isLocked={!sectionProps.isPremium}
+              isLocked={sectionProps.isLocked}
               onPress={sectionProps.onSelect}
             />
           </View>
@@ -51,54 +58,73 @@ const Section = memo((sectionProps: SectionProps) => {
 const ColorPickerScreen = memo(() => {
   const { draft, setColor } = useEventFormDraft();
 
+  const [pendingColor, setPendingColor] = useState<COLOR_KEY>(draft.colorKey);
+
+  const countdown = useMemo(
+    () => formatCountdown(draft.targetDate),
+    [draft.targetDate],
+  );
+
   const handlePressBack = useCallback(() => {
     NavigatorUtils.goBack();
   }, []);
 
-  const handleSelectFree = useCallback(
-    (colorKey: COLOR_KEY) => {
-      setColor(colorKey);
-      NavigatorUtils.goBack();
-    },
-    [setColor],
-  );
+  const handleSelectFree = useCallback((colorKey: COLOR_KEY) => {
+    setPendingColor(colorKey);
+  }, []);
 
-  const handleSelectPremium = useCallback(
-    (colorKey: COLOR_KEY) => {
-      if (!IS_PREMIUM) {
-        return;
-      }
+  const handleSelectPremium = useCallback((colorKey: COLOR_KEY) => {
+    if (!IS_PREMIUM) {
+      return;
+    }
+    setPendingColor(colorKey);
+  }, []);
 
-      setColor(colorKey);
-      NavigatorUtils.goBack();
-    },
-    [setColor],
-  );
+  const handleConfirm = useCallback(() => {
+    setColor(pendingColor);
+    NavigatorUtils.goBack();
+  }, [pendingColor, setColor]);
+
+  const palette = PALETTE[pendingColor];
 
   return (
     <ScreenContainer>
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-        <View style={styles.header}>
+        <SheetHeader
+          title={translate('picker.colorTitle')}
+          rightLabel={translate('common.confirm')}
+          onPressRight={handleConfirm}
+        />
+        <View style={styles.backButtonWrap} pointerEvents="box-none">
           <CircleButton
-            icon={<UiIcon name="close" size={18} color={colors.textPrimary} />}
+            icon={<UiIcon name="back" size={18} color={colors.textPrimary} />}
             onPress={handlePressBack}
           />
-          <Text style={styles.title}>{translate('picker.colorTitle')}</Text>
-          <View style={styles.headerSpacer} />
         </View>
         <ScrollView contentContainerStyle={styles.scroll}>
+          <ColorPickerPreview
+            icon={draft.icon}
+            palette={palette}
+            countdownValue={countdown.big}
+            countdownUnit={countdown.unit}
+          />
           <Section
-            title={translate('picker.free')}
+            title={`${translate('picker.free')} · ${FREE_COLOR_KEYS.length}`}
             colorKeys={FREE_COLOR_KEYS}
-            selectedKey={draft.colorKey}
-            isPremium
+            selectedKey={pendingColor}
+            isLocked={false}
             onSelect={handleSelectFree}
           />
           <Section
-            title={translate('picker.premium')}
+            title={`${translate('picker.premium')} · ${
+              PREMIUM_COLOR_KEYS.length
+            }`}
+            rightAccessory={
+              <UiIcon name="lock" size={11} color={colors.textSecondary} />
+            }
             colorKeys={PREMIUM_COLOR_KEYS}
-            selectedKey={draft.colorKey}
-            isPremium={IS_PREMIUM}
+            selectedKey={pendingColor}
+            isLocked={!IS_PREMIUM}
             onSelect={handleSelectPremium}
           />
         </ScrollView>
@@ -111,42 +137,38 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-  },
-  title: {
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 40,
+  backButtonWrap: {
+    position: 'absolute',
+    top: 52,
+    left: spacing.lg,
+    zIndex: 10,
   },
   scroll: {
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.xxl,
+    paddingTop: spacing.xxl,
     paddingBottom: spacing.xxxl,
+    gap: spacing.xxl,
   },
   section: {
-    marginBottom: spacing.xxl,
+    gap: spacing.md,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: spacing.xs,
   },
   sectionTitle: {
     ...typography.label,
     color: colors.textSecondary,
     textTransform: 'uppercase',
-    marginBottom: spacing.md,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginHorizontal: -spacing.xs,
   },
   gridCell: {
-    width: '14.2857%',
+    width: `${100 / 7}%`,
     padding: spacing.xs,
   },
 });

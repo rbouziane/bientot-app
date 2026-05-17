@@ -16,8 +16,9 @@ i18n.defaultLocale = 'fr';
 const detectedLocale = (): SupportedLocale => {
   const best = RNLocalize.findBestLanguageTag([...SUPPORTED_LOCALES]);
 
+  // TODO: remove this when we have real translations for all languages.
+  return 'fr';
   if (best == null) {
-    return 'fr';
   }
 
   return best.languageTag as SupportedLocale;

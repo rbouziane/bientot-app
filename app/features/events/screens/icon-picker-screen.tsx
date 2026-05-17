@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, ReactNode, useCallback, useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -11,87 +11,77 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import NavigatorUtils from '~/navigators/NavigatorUtils';
 import CircleButton from '~shared/components/CircleButton';
 import ScreenContainer from '~shared/components/ScreenContainer';
+import SheetHeader from '~shared/components/SheetHeader';
 import UiIcon from '~shared/components/UiIcon';
 import {
   FREE_ICON_CONCEPTS,
   PREMIUM_ICON_CONCEPTS,
 } from '~shared/constants/IconConcepts';
-import { ICON_CONCEPT } from '~shared/constants/IconConcept';
-import { colors, radius, spacing, typography } from '~shared/theme';
-import { hexA } from '~shared/utils/colorUtils';
+import { colors, radius, shadows, spacing, typography } from '~shared/theme';
 import { translate } from '~i18n/translate';
-import EventIcon from '../components/EventIcon';
+import IconTile from '../components/IconTile';
 import { useEventFormDraft } from '../hooks/useEventFormDraft';
 import { IconRef } from '../types/IconRef';
 
 // TODO: wire to a real usePremiumQuery once paywall is ready.
 const IS_PREMIUM = true;
 
-type CellProps = {
-  concept: ICON_CONCEPT;
-  isSelected: boolean;
-  isLocked: boolean;
-  darkColor: string;
-  onSelect: (concept: ICON_CONCEPT) => void;
+const CURATED_EMOJIS = [
+  '🎂',
+  '🎸',
+  '🏖️',
+  '🎄',
+  '🎉',
+  '🌸',
+  '⛰️',
+  '✈️',
+  '🍕',
+  '📚',
+  '💍',
+  '👶',
+  '🎁',
+  '⚽',
+  '🎬',
+  '🎨',
+];
+
+const isSameIcon = (left: IconRef, right: IconRef): boolean => {
+  if (left.family === 'emoji' && right.family === 'emoji') {
+    return left.value === right.value;
+  }
+  if (left.family === 'concept' && right.family === 'concept') {
+    return left.concept === right.concept;
+  }
+  return false;
 };
-
-const Cell = memo((cellProps: CellProps) => {
-  const handlePress = useCallback(() => {
-    if (cellProps.isLocked) {
-      return;
-    }
-
-    cellProps.onSelect(cellProps.concept);
-  }, [cellProps.concept, cellProps.isLocked, cellProps.onSelect]);
-
-  const background = cellProps.isSelected
-    ? hexA(cellProps.darkColor, 0.2)
-    : colors.surfaceSoft;
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      style={({ pressed }) => [
-        styles.cell,
-        { backgroundColor: background },
-        pressed && styles.cellPressed,
-      ]}
-    >
-      <EventIcon
-        icon={{ family: 'concept', concept: cellProps.concept }}
-        size={26}
-      />
-      {cellProps.isLocked && (
-        <View style={styles.lockBadge}>
-          <UiIcon name="lock" size={10} color={colors.textOnDark} />
-        </View>
-      )}
-    </Pressable>
-  );
-});
 
 type SectionProps = {
   title: string;
-  concepts: ICON_CONCEPT[];
-  selectedConcept: ICON_CONCEPT | null;
+  rightAccessory?: ReactNode;
+  items: IconRef[];
+  selected: IconRef;
   isLocked: boolean;
-  darkColor: string;
-  onSelect: (concept: ICON_CONCEPT) => void;
+  onSelect: (icon: IconRef) => void;
 };
 
 const Section = memo((sectionProps: SectionProps) => {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{sectionProps.title}</Text>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{sectionProps.title}</Text>
+        {sectionProps.rightAccessory}
+      </View>
       <View style={styles.grid}>
-        {sectionProps.concepts.map(concept => (
-          <View key={concept} style={styles.gridCell}>
-            <Cell
-              concept={concept}
-              isSelected={sectionProps.selectedConcept === concept}
+        {sectionProps.items.map(item => (
+          <View
+            key={item.family === 'emoji' ? item.value : item.concept}
+            style={styles.gridCell}
+          >
+            <IconTile
+              icon={item}
+              isSelected={isSameIcon(sectionProps.selected, item)}
               isLocked={sectionProps.isLocked}
-              darkColor={sectionProps.darkColor}
-              onSelect={sectionProps.onSelect}
+              onPress={sectionProps.onSelect}
             />
           </View>
         ))}
@@ -102,66 +92,131 @@ const Section = memo((sectionProps: SectionProps) => {
 
 const IconPickerScreen = memo(() => {
   const { draft, setIcon } = useEventFormDraft();
+
+  const [pendingIcon, setPendingIcon] = useState<IconRef>(draft.icon);
   const [emojiInput, setEmojiInput] = useState('');
 
-  const selectedConcept =
-    draft.icon.family === 'concept' ? draft.icon.concept : null;
+  const freeItems: IconRef[] = FREE_ICON_CONCEPTS.map(concept => ({
+    family: 'concept',
+    concept,
+  }));
+  const premiumItems: IconRef[] = PREMIUM_ICON_CONCEPTS.map(concept => ({
+    family: 'concept',
+    concept,
+  }));
+  const emojiItems: IconRef[] = CURATED_EMOJIS.map(value => ({
+    family: 'emoji',
+    value,
+  }));
 
   const handlePressBack = useCallback(() => {
     NavigatorUtils.goBack();
   }, []);
 
-  const handleSelectConcept = useCallback(
-    (concept: ICON_CONCEPT) => {
-      const nextIcon: IconRef = { family: 'concept', concept };
-      setIcon(nextIcon);
-      NavigatorUtils.goBack();
-    },
-    [setIcon],
-  );
+  const handleConfirm = useCallback(() => {
+    setIcon(pendingIcon);
+    NavigatorUtils.goBack();
+  }, [pendingIcon, setIcon]);
+
+  const handleSelectFree = useCallback((icon: IconRef) => {
+    setPendingIcon(icon);
+  }, []);
+
+  const handleSelectPremium = useCallback((icon: IconRef) => {
+    if (!IS_PREMIUM) {
+      return;
+    }
+    setPendingIcon(icon);
+  }, []);
+
+  const handleSelectEmoji = useCallback((icon: IconRef) => {
+    setPendingIcon(icon);
+  }, []);
 
   const handleSubmitEmoji = useCallback(() => {
     const value = emojiInput.trim();
     if (value.length === 0) {
       return;
     }
-
-    setIcon({ family: 'emoji', value });
+    setPendingIcon({ family: 'emoji', value });
     setEmojiInput('');
-    NavigatorUtils.goBack();
-  }, [emojiInput, setIcon]);
+  }, [emojiInput]);
 
   return (
     <ScreenContainer>
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-        <View style={styles.header}>
+        <SheetHeader
+          title={translate('picker.iconTitle')}
+          rightLabel={translate('common.confirm')}
+          onPressRight={handleConfirm}
+        />
+        <View style={styles.backButtonWrap} pointerEvents="box-none">
           <CircleButton
-            icon={<UiIcon name="close" size={18} color={colors.textPrimary} />}
+            icon={<UiIcon name="back" size={18} color={colors.textPrimary} />}
             onPress={handlePressBack}
           />
-          <Text style={styles.title}>{translate('picker.iconTitle')}</Text>
-          <View style={styles.headerSpacer} />
         </View>
-        <ScrollView contentContainerStyle={styles.scroll}>
-          <View style={styles.emojiRow}>
-            <Text style={styles.emojiLabel}>
-              {translate('picker.emojiLabel')}
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Section
+            title={`${translate('picker.free')} · ${FREE_ICON_CONCEPTS.length}`}
+            items={freeItems}
+            selected={pendingIcon}
+            isLocked={false}
+            onSelect={handleSelectFree}
+          />
+          <Section
+            title={`${translate('picker.premium')} · 60+`}
+            rightAccessory={
+              <UiIcon name="lock" size={11} color={colors.textSecondary} />
+            }
+            items={premiumItems}
+            selected={pendingIcon}
+            isLocked={!IS_PREMIUM}
+            onSelect={handleSelectPremium}
+          />
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                {translate('picker.emojiTitle')}
+              </Text>
+            </View>
+            <Text style={styles.emojiHint}>
+              {translate('picker.emojiHint')}
             </Text>
+            <View style={styles.grid}>
+              {emojiItems.map(item => (
+                <View
+                  key={item.family === 'emoji' ? item.value : ''}
+                  style={styles.gridCell}
+                >
+                  <IconTile
+                    icon={item}
+                    isSelected={isSameIcon(pendingIcon, item)}
+                    isLocked={false}
+                    onPress={handleSelectEmoji}
+                  />
+                </View>
+              ))}
+            </View>
             <View style={styles.emojiInputRow}>
               <TextInput
                 value={emojiInput}
                 onChangeText={setEmojiInput}
                 onSubmitEditing={handleSubmitEmoji}
-                placeholder="🎂"
+                placeholder={translate('picker.emojiPlaceholder')}
                 placeholderTextColor={colors.textMuted}
                 maxLength={4}
+                returnKeyType="done"
                 style={styles.emojiInput}
               />
               <Pressable
                 onPress={handleSubmitEmoji}
                 style={({ pressed }) => [
                   styles.emojiButton,
-                  pressed && styles.cellPressed,
+                  pressed && styles.emojiButtonPressed,
                 ]}
               >
                 <Text style={styles.emojiButtonLabel}>
@@ -170,22 +225,6 @@ const IconPickerScreen = memo(() => {
               </Pressable>
             </View>
           </View>
-          <Section
-            title={translate('picker.free')}
-            concepts={FREE_ICON_CONCEPTS}
-            selectedConcept={selectedConcept}
-            isLocked={false}
-            darkColor={colors.textPrimary}
-            onSelect={handleSelectConcept}
-          />
-          <Section
-            title={translate('picker.premium')}
-            concepts={PREMIUM_ICON_CONCEPTS}
-            selectedConcept={selectedConcept}
-            isLocked={!IS_PREMIUM}
-            darkColor={colors.textPrimary}
-            onSelect={handleSelectConcept}
-          />
         </ScrollView>
       </SafeAreaView>
     </ScreenContainer>
@@ -196,47 +235,59 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-  },
-  title: {
-    ...typography.bodyLarge,
-    color: colors.textPrimary,
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 40,
+  backButtonWrap: {
+    position: 'absolute',
+    top: 52,
+    left: spacing.lg,
+    zIndex: 10,
   },
   scroll: {
     paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
     paddingBottom: spacing.xxxl,
+    gap: spacing.xxl,
   },
-  emojiRow: {
-    marginBottom: spacing.xxl,
+  section: {
+    gap: spacing.md,
   },
-  emojiLabel: {
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: spacing.xs,
+  },
+  sectionTitle: {
     ...typography.label,
     color: colors.textSecondary,
     textTransform: 'uppercase',
-    marginBottom: spacing.md,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  gridCell: {
+    width: '20%',
+    padding: spacing.xs,
+  },
+  emojiHint: {
+    ...typography.captionMedium,
+    color: colors.textSecondary,
+    paddingHorizontal: spacing.xs,
   },
   emojiInputRow: {
     flexDirection: 'row',
     gap: spacing.sm,
+    marginTop: spacing.sm,
   },
   emojiInput: {
     flex: 1,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,
     borderRadius: radius.lg,
-    backgroundColor: colors.surfaceSoft,
-    fontSize: 20,
+    backgroundColor: colors.surface,
+    fontSize: 22,
     color: colors.textPrimary,
+    ...shadows.card,
   },
   emojiButton: {
     paddingHorizontal: spacing.lg,
@@ -250,43 +301,8 @@ const styles = StyleSheet.create({
     ...typography.bodyMedium,
     color: colors.textOnDark,
   },
-  section: {
-    marginBottom: spacing.xxl,
-  },
-  sectionTitle: {
-    ...typography.label,
-    color: colors.textSecondary,
-    textTransform: 'uppercase',
-    marginBottom: spacing.md,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -spacing.xs,
-  },
-  gridCell: {
-    width: '20%',
-    padding: spacing.xs,
-  },
-  cell: {
-    aspectRatio: 1,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cellPressed: {
+  emojiButtonPressed: {
     opacity: 0.85,
-  },
-  lockBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 

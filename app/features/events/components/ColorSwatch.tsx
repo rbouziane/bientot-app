@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import UiIcon from '~shared/components/UiIcon';
 import { COLOR_KEY } from '~shared/constants/ColorKey';
 import { PaletteEntry } from '~shared/constants/Palette';
-import { colors, radius } from '~shared/theme';
+import { colors } from '~shared/theme';
 import { hexA } from '~shared/utils/colorUtils';
 
 type Props = {
@@ -19,28 +19,40 @@ const ColorSwatch = memo((props: Props) => {
     props.onPress(props.colorKey);
   }, [props.colorKey, props.onPress]);
 
-  const ringColor = props.isSelected ? props.palette.dark : 'transparent';
+  const dotOpacity = props.isLocked ? 0.5 : 0.65;
+  const wrapperOpacity = props.isLocked ? 0.55 : 1;
 
   return (
     <Pressable
       onPress={handlePress}
       style={({ pressed }) => [
         styles.root,
-        { borderColor: ringColor },
+        { opacity: wrapperOpacity },
+        props.isSelected && styles.rootSelected,
         pressed && styles.pressed,
       ]}
     >
-      <View style={[styles.swatch, { backgroundColor: props.palette.light }]}>
+      {props.isSelected && (
+        <View
+          style={[styles.halo, { borderColor: hexA(props.palette.dark, 0.5) }]}
+        />
+      )}
+      <View
+        style={[
+          styles.circle,
+          { backgroundColor: props.palette.light },
+          !props.isSelected && styles.circleIdleBorder,
+        ]}
+      >
         <View
           style={[
-            styles.accent,
-            { backgroundColor: hexA(props.palette.dark, 0.25) },
+            styles.dot,
+            { backgroundColor: props.palette.dark, opacity: dotOpacity },
           ]}
         />
-        <View style={[styles.dot, { backgroundColor: props.palette.dark }]} />
         {props.isLocked && (
-          <View style={styles.lockBadge}>
-            <UiIcon name="lock" size={10} color={colors.textOnDark} />
+          <View style={styles.lockBubble}>
+            <UiIcon name="lock" size={8} color={colors.textPrimary} />
           </View>
         )}
       </View>
@@ -50,42 +62,44 @@ const ColorSwatch = memo((props: Props) => {
 
 const styles = StyleSheet.create({
   root: {
+    width: '100%',
     aspectRatio: 1,
-    borderRadius: radius.lg,
-    borderWidth: 2,
-    padding: 2,
-  },
-  swatch: {
-    flex: 1,
-    borderRadius: radius.md,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  accent: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: '55%',
-  },
-  dot: {
-    position: 'absolute',
-    left: 6,
-    bottom: 6,
-    width: 14,
-    height: 14,
-    borderRadius: 4,
-  },
-  lockBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: 'rgba(0,0,0,0.6)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  rootSelected: {
+    transform: [{ scale: 1.08 }],
+  },
+  halo: {
+    position: 'absolute',
+    top: -3,
+    left: -3,
+    right: -3,
+    bottom: -3,
+    borderRadius: 999,
+    borderWidth: 2.5,
+  },
+  circle: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  circleIdleBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(0,0,0,0.06)',
+  },
+  dot: {
+    width: '38%',
+    height: '38%',
+    borderRadius: 999,
+  },
+  lockBubble: {
+    position: 'absolute',
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    padding: 3,
+    borderRadius: 999,
   },
   pressed: {
     opacity: 0.85,
