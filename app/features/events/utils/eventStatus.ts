@@ -14,6 +14,56 @@ export type EventsByStatus = {
   past: Event[];
 };
 
+export type PastEventGroup = {
+  key: 'thisMonth' | 'earlierThisYear' | 'older';
+  events: Event[];
+};
+
+export const groupPastEvents = (
+  events: Event[],
+  now: Date,
+): PastEventGroup[] => {
+  const thisMonth: Event[] = [];
+  const earlierThisYear: Event[] = [];
+  const older: Event[] = [];
+
+  for (const event of events) {
+    const target = new Date(event.targetDate);
+    const sameYear = target.getFullYear() === now.getFullYear();
+    const sameMonth = sameYear && target.getMonth() === now.getMonth();
+
+    if (sameMonth) {
+      thisMonth.push(event);
+      continue;
+    }
+    if (sameYear) {
+      earlierThisYear.push(event);
+      continue;
+    }
+    older.push(event);
+  }
+
+  const groups: PastEventGroup[] = [];
+  if (thisMonth.length > 0) {
+    groups.push({ key: 'thisMonth', events: thisMonth });
+  }
+  if (earlierThisYear.length > 0) {
+    groups.push({ key: 'earlierThisYear', events: earlierThisYear });
+  }
+  if (older.length > 0) {
+    groups.push({ key: 'older', events: older });
+  }
+
+  return groups;
+};
+
+export const countPastThisYear = (events: Event[], now: Date): number => {
+  return events.filter(event => {
+    const target = new Date(event.targetDate);
+    return target.getFullYear() === now.getFullYear();
+  }).length;
+};
+
 export const splitEventsByStatus = (
   events: Event[],
   now: Date,

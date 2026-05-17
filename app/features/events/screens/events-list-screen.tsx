@@ -1,27 +1,47 @@
 import { memo, useCallback, useMemo, useState } from 'react';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import NavigatorUtils from '~/navigators/NavigatorUtils';
 import { SCREEN_NAME, STACK_NAME } from '~shared/constants/Screen';
 import ScreenContainer from '~shared/components/ScreenContainer';
-import { spacing } from '~shared/theme';
+import { colors, spacing, typography } from '~shared/theme';
+import { translate } from '~i18n/translate';
 import EventCard from '../components/EventCard';
 import HomeEmpty from '../components/HomeEmpty';
 import HomeFreeLimitCard from '../components/HomeFreeLimitCard';
 import HomeHeader from '../components/HomeHeader';
 import HomeTabs, { HomeTab } from '../components/HomeTabs';
+import PassesHero from '../components/PassesHero';
+import PastCard from '../components/PastCard';
 import { useSeedDemoEvents } from '../hooks/useSeedDemoEvents';
 import { useEventsQuery } from '../services/hook';
 import { Event } from '../types/Event';
-import { splitEventsByStatus } from '../utils/eventStatus';
+import {
+  countPastThisYear,
+  groupPastEvents,
+  PastEventGroup,
+  splitEventsByStatus,
+} from '../utils/eventStatus';
 
 const FREE_EVENT_LIMIT = 3;
 // TODO: pull from IAP (paywall feature). The price is €3.99 during the
 // first 4 launch weeks and switches to €4.99 after. Must come from the
 // store, not hardcoded.
 const LAUNCH_PRICE = '3,99 €';
-const BOTTOM_NAV_SAFE_SPACE = 120;
+const BOTTOM_NAV_SAFE_SPACE = 150;
+
+const PAST_GROUP_LABEL_KEYS: Record<PastEventGroup['key'], string> = {
+  thisMonth: 'passes.groupThisMonth',
+  earlierThisYear: 'passes.groupEarlierYear',
+  older: 'passes.groupOlder',
+};
 
 const keyExtractor = (event: Event) => event.id;
 
@@ -36,9 +56,11 @@ const EventsListScreen = memo(() => {
 
   const [tab, setTab] = useState<HomeTab>('active');
 
+  const now = useMemo(() => new Date(), []);
+
   const { active, past } = useMemo(
-    () => splitEventsByStatus(events ?? [], new Date()),
-    [events],
+    () => splitEventsByStatus(events ?? [], now),
+    [events, now],
   );
 
   const visibleActive = useMemo(() => {
@@ -48,7 +70,11 @@ const EventsListScreen = memo(() => {
     return active.slice(0, FREE_EVENT_LIMIT);
   }, [active, isPremium]);
 
-  const displayedEvents = tab === 'active' ? visibleActive : past;
+  const pastGroups = useMemo(() => groupPastEvents(past, now), [past, now]);
+  const pastThisYearCount = useMemo(
+    () => countPastThisYear(past, now),
+    [past, now],
+  );
 
   const showFreeLimit =
     !isPremium && tab === 'active' && active.length >= FREE_EVENT_LIMIT;
@@ -99,9 +125,11 @@ const EventsListScreen = memo(() => {
     );
   }, [showFreeLimit, handlePressPremium]);
 
-  const hasContent = displayedEvents.length > 0;
-  const showEmptyState =
-    !hasContent && !isEventsPending && tab === 'active' && active.length === 0;
+  const isActiveTab = tab === 'active';
+  const hasActiveContent = visibleActive.length > 0;
+  const hasPastContent = past.length > 0;
+  const showActiveEmpty =
+    isActiveTab && !isEventsPending && active.length === 0;
 
   return (
     <ScreenContainer>
@@ -116,10 +144,14 @@ const EventsListScreen = memo(() => {
           pastCount={past.length}
           onChange={setTab}
         />
-        {showEmptyState && <HomeEmpty onPressCreate={handlePressAdd} />}
-        {hasContent && (
+
+        {isActiveTab && showActiveEmpty && (
+          <HomeEmpty onPressCreate={handlePressAdd} />
+        )}
+
+        {isActiveTab && hasActiveContent && (
           <FlashList
-            data={displayedEvents}
+            data={visibleActive}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             ItemSeparatorComponent={ItemSeparator}
@@ -134,6 +166,37 @@ const EventsListScreen = memo(() => {
             }
           />
         )}
+
+        {!isActiveTab && (
+          <ScrollView
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={isEventsPending}
+                onRefresh={refetchEvents}
+              />
+            }
+          >
+            {hasPastContent && <PassesHero count={pastThisYearCount} />}
+            {pastGroups.map(group => (
+              <View key={group.key} style={styles.group}>
+                <Text style={styles.groupLabel}>
+                  {translate(PAST_GROUP_LABEL_KEYS[group.key])}
+                </Text>
+                <View style={styles.groupList}>
+                  {group.events.map(event => (
+                    <PastCard
+                      key={event.id}
+                      event={event}
+                      onPress={handlePressCard}
+                    />
+                  ))}
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        )}
       </SafeAreaView>
     </ScreenContainer>
   );
@@ -147,12 +210,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.xs,
     paddingBottom: BOTTOM_NAV_SAFE_SPACE,
+    gap: spacing.md,
   },
   separator: {
     height: spacing.md,
   },
   footerSpacing: {
     paddingTop: spacing.md,
+  },
+  group: {
+    marginTop: spacing.md,
+  },
+  groupLabel: {
+    ...typography.label,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    paddingHorizontal: spacing.xs,
+    paddingBottom: spacing.sm,
+  },
+  groupList: {
+    gap: spacing.md,
   },
 });
 
