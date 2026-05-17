@@ -11,7 +11,8 @@
     "retry": "Réessayer",
     "loading": "Chargement…",
     "premium": "Premium",
-    "free": "Gratuit"
+    "free": "Gratuit",
+    "add": "Ajouter"
   },
   "date": {
     "today": "Aujourd'hui",
@@ -40,7 +41,6 @@
     "freeLimitTitle": "Vous avez atteint la limite Free",
     "freeLimitSubtitle": "Passez Premium pour ajouter autant de dates que vous voulez",
     "freeLimitCta": "Passer Premium · {price}",
-    "addEvent": "Ajouter une date",
     "passedHeaderThisMonth": "Ce mois-ci",
     "passedHeaderEarlierThisYear": "Plus tôt cette année",
     "passedHeaderOlder": "Plus ancien"

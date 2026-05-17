@@ -22,7 +22,7 @@ const ColorPickerPreview = memo((props: Props) => {
           { backgroundColor: hexA(props.palette.dark, 0.16) },
         ]}
       />
-      <IconBadge icon={props.icon} darkColor={props.palette.dark} size={56} />
+      <IconBadge icon={props.icon} size={56} />
       <View style={styles.textColumn}>
         <Text style={[styles.value, tabular]}>{props.countdownValue}</Text>
         {props.countdownUnit !== '' && (

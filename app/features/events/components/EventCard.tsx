@@ -1,13 +1,5 @@
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, {
-  cancelAnimation,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
-import NativeIcon from '~shared/components/NativeIcon';
 import { PALETTE } from '~shared/constants/Palette';
 import {
   colors,
@@ -19,7 +11,6 @@ import {
 } from '~shared/theme';
 import { hexA } from '~shared/utils/colorUtils';
 import {
-  daysFromNow,
   formatCountdown,
   formatLongDate,
   progressFill,
@@ -27,6 +18,7 @@ import {
 import { RECURRENCE } from '../enums/Recurrence';
 import { Event } from '../types/Event';
 import IconBadge from './IconBadge';
+import RecurrenceChip from './RecurrenceChip';
 
 type Variant = 'horizontal' | 'vertical';
 
@@ -52,32 +44,9 @@ const EventCard = memo((props: Props) => {
     () => formatLongDate(props.event.targetDate),
     [props.event.targetDate],
   );
-  const absoluteDays = useMemo(
-    () => Math.abs(daysFromNow(props.event.targetDate)),
-    [props.event.targetDate],
-  );
 
-  const isRecurrent =
+  const showRecurrence =
     props.event.recurrence !== RECURRENCE.NONE && !countdown.isPast;
-
-  const pulse = useSharedValue(0.35);
-
-  useEffect(() => {
-    if (!countdown.isToday) {
-      return;
-    }
-
-    pulse.value = withRepeat(withTiming(0.6, { duration: 1500 }), -1, true);
-
-    return () => {
-      cancelAnimation(pulse);
-      pulse.value = 0.35;
-    };
-  }, [countdown.isToday, pulse]);
-
-  const pulseStyle = useAnimatedStyle(() => ({
-    opacity: pulse.value,
-  }));
 
   const fillStyle = useMemo(() => {
     if (variant === 'vertical') {
@@ -88,7 +57,6 @@ const EventCard = memo((props: Props) => {
         height: `${fill * 100}%` as `${number}%`,
       };
     }
-
     return {
       left: 0,
       top: 0,
@@ -103,9 +71,6 @@ const EventCard = memo((props: Props) => {
 
   const cardBackground = hexA(color.dark, 0.06);
   const fillBackground = hexA(color.dark, 0.16);
-  const ringColor = hexA(color.dark, 0.45);
-  const daysSubtitle =
-    countdown.isToday || countdown.isSoon ? null : `${absoluteDays} jours`;
 
   return (
     <Pressable
@@ -123,41 +88,35 @@ const EventCard = memo((props: Props) => {
       <View
         style={[styles.fill, fillStyle, { backgroundColor: fillBackground }]}
       />
-      {countdown.isToday && (
-        <Animated.View
-          pointerEvents="none"
-          style={[styles.pulseRing, { borderColor: ringColor }, pulseStyle]}
-        />
-      )}
       <View style={styles.content}>
         <View style={styles.headerRow}>
-          <IconBadge icon={props.event.icon} darkColor={color.dark} size={38} />
+          <IconBadge icon={props.event.icon} size={38} />
           <View style={styles.titleColumn}>
             <Text style={styles.title} numberOfLines={1}>
               {props.event.title}
             </Text>
-            <Text style={styles.subtitle} numberOfLines={1}>
-              {dateLabel}
-            </Text>
-          </View>
-          {isRecurrent && (
-            <View style={styles.recurrenceIcon}>
-              <NativeIcon
-                iosName="arrow.2.circlepath"
-                androidName="autorenew"
-                size={14}
-                color={hexA(color.dark, 0.7)}
-              />
+            <View style={styles.subtitleRow}>
+              <Text style={styles.subtitle} numberOfLines={1}>
+                {dateLabel}
+              </Text>
+              {showRecurrence && (
+                <RecurrenceChip recurrence={props.event.recurrence} />
+              )}
             </View>
-          )}
+          </View>
         </View>
         <View style={styles.countdownRow}>
-          <Text style={[styles.countdownBig, tabular]}>{countdown.big}</Text>
+          <Text
+            style={[
+              styles.countdownBig,
+              tabular,
+              countdown.isToday && styles.countdownBigToday,
+            ]}
+          >
+            {countdown.big}
+          </Text>
           {countdown.unit !== '' && (
             <Text style={styles.countdownUnit}>{countdown.unit}</Text>
-          )}
-          {daysSubtitle != null && (
-            <Text style={styles.countdownSub}>· {daysSubtitle}</Text>
           )}
         </View>
       </View>
@@ -173,19 +132,10 @@ const styles = StyleSheet.create({
   fill: {
     position: 'absolute',
   },
-  pulseRing: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: radius.xxl,
-    borderWidth: 2,
-  },
   content: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.xl,
     gap: spacing.sm,
   },
   headerRow: {
@@ -202,35 +152,41 @@ const styles = StyleSheet.create({
     ...typography.cardTitle,
     color: colors.textPrimary,
   },
-  subtitle: {
-    ...typography.captionMedium,
-    color: colors.textSecondary,
-    marginTop: 2,
-    textTransform: 'lowercase',
+  subtitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: 3,
   },
-  recurrenceIcon: {
-    paddingTop: spacing.xs,
+  subtitle: {
+    fontSize: 12.5,
+    color: colors.textSecondary,
+    textTransform: 'lowercase',
+    letterSpacing: -0.1,
+    flexShrink: 1,
   },
   countdownRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: spacing.sm,
     marginTop: spacing.xs,
-    flexWrap: 'wrap',
   },
   countdownBig: {
-    ...typography.countdownMedium,
+    fontSize: 30,
+    fontWeight: '700',
+    letterSpacing: -0.8,
+    lineHeight: 30,
     color: colors.textPrimary,
+  },
+  countdownBigToday: {
+    fontSize: 32,
+    lineHeight: 32,
   },
   countdownUnit: {
     fontSize: 16,
     fontWeight: '500',
     color: colors.textSecondary,
     letterSpacing: -0.2,
-  },
-  countdownSub: {
-    fontSize: 13,
-    color: colors.textMuted,
   },
   pressed: {
     opacity: 0.92,

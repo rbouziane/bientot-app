@@ -37,7 +37,7 @@ const CompactEventPreview = memo((props: Props) => {
           { backgroundColor: hexA(props.palette.dark, 0.18) },
         ]}
       />
-      <IconBadge icon={props.icon} darkColor={props.palette.dark} size={42} />
+      <IconBadge icon={props.icon} size={42} />
       <View style={styles.textColumn}>
         <Text style={styles.title} numberOfLines={1}>
           {props.title}

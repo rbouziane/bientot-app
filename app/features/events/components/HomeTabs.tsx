@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing, tabular } from '~shared/theme';
+import { translate } from '~i18n/translate';
 
 export type HomeTab = 'active' | 'past';
 
@@ -12,31 +13,36 @@ type TabProps = {
 };
 
 const Tab = memo((tabProps: TabProps) => {
-  const backgroundColor = tabProps.isActive
-    ? colors.textPrimary
-    : 'transparent';
   const labelColor = tabProps.isActive
-    ? colors.textOnDark
+    ? colors.textPrimary
     : colors.textSecondary;
-  const countColor = tabProps.isActive
-    ? 'rgba(255,255,255,0.6)'
-    : colors.textMuted;
+  const countColor = tabProps.isActive ? colors.textPrimary : colors.textMuted;
+  const countBackground = tabProps.isActive
+    ? 'rgba(26,26,26,0.08)'
+    : 'rgba(26,26,26,0.04)';
 
   return (
     <Pressable
       onPress={tabProps.onPress}
-      style={({ pressed }) => [
-        styles.tab,
-        { backgroundColor },
-        pressed && styles.tabPressed,
-      ]}
+      style={({ pressed }) => [styles.tab, pressed && styles.tabPressed]}
     >
-      <Text style={[styles.tabLabel, { color: labelColor }]}>
-        {tabProps.label}
-      </Text>
-      <Text style={[styles.tabCount, tabular, { color: countColor }]}>
-        {tabProps.count}
-      </Text>
+      <View style={styles.tabRow}>
+        <Text
+          style={[
+            styles.tabLabel,
+            { color: labelColor },
+            tabProps.isActive && styles.tabLabelActive,
+          ]}
+        >
+          {tabProps.label}
+        </Text>
+        <View style={[styles.countChip, { backgroundColor: countBackground }]}>
+          <Text style={[styles.countLabel, tabular, { color: countColor }]}>
+            {tabProps.count}
+          </Text>
+        </View>
+      </View>
+      {tabProps.isActive && <View style={styles.underline} />}
     </Pressable>
   );
 });
@@ -60,13 +66,13 @@ const HomeTabs = memo((props: Props) => {
   return (
     <View style={styles.root}>
       <Tab
-        label="Actifs"
+        label={translate('events.tabActive')}
         count={props.activeCount}
         isActive={props.active === 'active'}
         onPress={handlePressActive}
       />
       <Tab
-        label="Passés"
+        label={translate('events.tabPassed')}
         count={props.pastCount}
         isActive={props.active === 'past'}
         onPress={handlePressPast}
@@ -78,28 +84,50 @@ const HomeTabs = memo((props: Props) => {
 const styles = StyleSheet.create({
   root: {
     marginHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    padding: spacing.xs,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surfaceMuted,
+    marginBottom: 14,
     flexDirection: 'row',
-    alignSelf: 'flex-start',
-    gap: 2,
+    alignItems: 'flex-end',
+    gap: spacing.xxl,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
   },
   tab: {
+    position: 'relative',
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+    paddingHorizontal: 2,
+  },
+  tabRow: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    paddingVertical: 7,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.pill,
-    gap: spacing.xs,
+    alignItems: 'center',
+    gap: 7,
   },
   tabLabel: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
+    letterSpacing: -0.2,
   },
-  tabCount: {
-    fontSize: 12,
+  tabLabelActive: {
+    fontWeight: '600',
+  },
+  countChip: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: radius.pill,
+  },
+  countLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    lineHeight: 14,
+  },
+  underline: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 2.5,
+    backgroundColor: colors.textPrimary,
+    borderRadius: 2,
   },
   tabPressed: {
     opacity: 0.85,

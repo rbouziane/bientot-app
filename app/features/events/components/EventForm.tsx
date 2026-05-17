@@ -321,7 +321,7 @@ const EventForm = memo(() => {
         </FieldRow>
         <FieldRow isLast onPress={handlePressIconRow}>
           <Text style={styles.rowLabel}>{translate('form.fieldIcon')}</Text>
-          <IconBadge icon={draft.icon} darkColor={palette.dark} size={30} />
+          <IconBadge icon={draft.icon} size={30} />
           <UiIcon name="chevronRight" size={14} color={colors.textMuted} />
         </FieldRow>
       </FieldGroup>

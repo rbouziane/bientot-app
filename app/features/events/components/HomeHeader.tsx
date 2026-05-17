@@ -1,62 +1,40 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import CircleButton from '~shared/components/CircleButton';
-import UiIcon from '~shared/components/UiIcon';
-import { colors, radius, spacing, typography } from '~shared/theme';
+import { format } from 'date-fns';
+import BientotLogo from '~shared/assets/icons/bientot-logo.svg';
+import { colors, spacing, typography } from '~shared/theme';
 import { translate } from '~i18n/translate';
+import AddEventButton from './AddEventButton';
 
 type Props = {
-  count: number;
-  isPremium: boolean;
   onLongPressTitle?: () => void;
   onPressAdd: () => void;
-  onPressFilter?: () => void;
 };
 
 const HomeHeader = memo((props: Props) => {
-  const subtitle =
-    props.count > 1
-      ? translate('events.activeCountOther', { count: props.count })
-      : translate('events.activeCount', { count: props.count });
+  const eyebrowDate = useMemo(() => format(new Date(), 'EEEE d MMMM'), []);
 
   const handleLongPress = useCallback(() => {
     if (props.onLongPressTitle == null) {
       return;
     }
-
     props.onLongPressTitle();
   }, [props.onLongPressTitle]);
 
   return (
     <View style={styles.root}>
       <View style={styles.left}>
-        <Pressable onLongPress={handleLongPress} delayLongPress={600}>
-          <Text style={styles.title}>{translate('events.title')}</Text>
+        <BientotLogo width={42} height={42} />
+        <Pressable
+          onLongPress={handleLongPress}
+          delayLongPress={600}
+          style={styles.textBlock}
+        >
+          <Text style={styles.eyebrow}>{eyebrowDate}</Text>
+          <Text style={styles.wordmark}>{translate('events.title')}</Text>
         </Pressable>
-        {props.count > 0 && (
-          <View style={styles.subtitleRow}>
-            <Text style={styles.subtitle}>{subtitle}</Text>
-            {props.isPremium && (
-              <View style={styles.premiumPill}>
-                <Text style={styles.premiumLabel}>
-                  {translate('common.premium').toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
       </View>
-      <View style={styles.actions}>
-        <CircleButton
-          icon={<UiIcon name="filter" size={17} color={colors.textPrimary} />}
-          onPress={props.onPressFilter}
-        />
-        <CircleButton
-          icon={<UiIcon name="plus" size={18} color={colors.white} />}
-          tone="ink"
-          onPress={props.onPressAdd}
-        />
-      </View>
+      <AddEventButton onPress={props.onPressAdd} />
     </View>
   );
 });
@@ -64,45 +42,38 @@ const HomeHeader = memo((props: Props) => {
 const styles = StyleSheet.create({
   root: {
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
+    paddingTop: spacing.sm,
     paddingBottom: spacing.md,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
+    gap: spacing.lg,
   },
   left: {
     flex: 1,
     minWidth: 0,
-  },
-  title: {
-    ...typography.appTitle,
-    color: colors.textPrimary,
-  },
-  subtitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.xs,
+    gap: spacing.md,
   },
-  subtitle: {
-    fontSize: 13,
+  textBlock: {
+    flex: 1,
+    minWidth: 0,
+  },
+  eyebrow: {
+    fontSize: 11.5,
     color: colors.textSecondary,
-  },
-  premiumPill: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radius.sm,
-    backgroundColor: colors.surfacePressed,
-  },
-  premiumLabel: {
-    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
     fontWeight: '600',
-    letterSpacing: 0.3,
-    color: colors.textPrimary,
+    marginBottom: 3,
   },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
+  wordmark: {
+    ...typography.appTitle,
+    fontSize: 28,
+    letterSpacing: -0.8,
+    lineHeight: 28,
+    color: colors.textPrimary,
   },
 });
 

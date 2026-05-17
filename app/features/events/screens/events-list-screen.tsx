@@ -21,6 +21,7 @@ const FREE_EVENT_LIMIT = 3;
 // first 4 launch weeks and switches to €4.99 after. Must come from the
 // store, not hardcoded.
 const LAUNCH_PRICE = '3,99 €';
+const BOTTOM_NAV_SAFE_SPACE = 120;
 
 const keyExtractor = (event: Event) => event.id;
 
@@ -28,7 +29,7 @@ const ItemSeparator = memo(() => <View style={styles.separator} />);
 
 const EventsListScreen = memo(() => {
   // TODO: wire to a real usePremiumQuery hook once the paywall is ready.
-  const isPremium = true;
+  const isPremium = false;
 
   const { events, isEventsPending, refetchEvents } = useEventsQuery();
   const { seedDemoEvents } = useSeedDemoEvents();
@@ -40,7 +41,14 @@ const EventsListScreen = memo(() => {
     [events],
   );
 
-  const displayedEvents = tab === 'active' ? active : past;
+  const visibleActive = useMemo(() => {
+    if (isPremium) {
+      return active;
+    }
+    return active.slice(0, FREE_EVENT_LIMIT);
+  }, [active, isPremium]);
+
+  const displayedEvents = tab === 'active' ? visibleActive : past;
 
   const showFreeLimit =
     !isPremium && tab === 'active' && active.length >= FREE_EVENT_LIMIT;
@@ -92,13 +100,13 @@ const EventsListScreen = memo(() => {
   }, [showFreeLimit, handlePressPremium]);
 
   const hasContent = displayedEvents.length > 0;
+  const showEmptyState =
+    !hasContent && !isEventsPending && tab === 'active' && active.length === 0;
 
   return (
     <ScreenContainer>
       <SafeAreaView style={styles.safe} edges={['top']}>
         <HomeHeader
-          count={active.length}
-          isPremium={isPremium}
           onPressAdd={handlePressAdd}
           onLongPressTitle={handleLongPressTitle}
         />
@@ -108,9 +116,7 @@ const EventsListScreen = memo(() => {
           pastCount={past.length}
           onChange={setTab}
         />
-        {!hasContent && !isEventsPending && tab === 'active' && (
-          <HomeEmpty onPressCreate={handlePressAdd} />
-        )}
+        {showEmptyState && <HomeEmpty onPressCreate={handlePressAdd} />}
         {hasContent && (
           <FlashList
             data={displayedEvents}
@@ -140,7 +146,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.xs,
-    paddingBottom: spacing.xxl,
+    paddingBottom: BOTTOM_NAV_SAFE_SPACE,
   },
   separator: {
     height: spacing.md,
