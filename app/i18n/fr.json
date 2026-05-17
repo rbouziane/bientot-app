@@ -235,6 +235,53 @@
     "title": "Supprimer cette date ?",
     "body": "« {title} » sera retirée définitivement de l'app et des widgets."
   },
+  "groups": {
+    "title": "Groupes",
+    "hint": "Organise tes dates par thème. Chaque groupe peut alimenter un widget « Mode B ».",
+    "count": "{count} dates",
+    "countOne": "{count} date",
+    "sampleFamily": "Famille",
+    "sampleTravel": "Voyages 2026",
+    "samplePro": "Pro · Deadlines",
+    "sampleConcerts": "Concerts"
+  },
+  "share": {
+    "title": "Partager",
+    "hint": "Aperçu de l'image générée. Format Stories (9:16) · idéal Instagram / WhatsApp.",
+    "formatStories": "Stories",
+    "formatPost": "Post",
+    "formatSlack": "Slack",
+    "cta": "Partager"
+  },
+  "sort": {
+    "title": "Tri & filtres",
+    "reset": "Réinitialiser",
+    "sortBy": "Trier par",
+    "filterByGroup": "Filtrer par groupe",
+    "sortClosest": "Date la plus proche",
+    "sortFurthest": "Date la plus lointaine",
+    "sortAlpha": "Ordre alphabétique",
+    "sortColor": "Couleur",
+    "groupAll": "Tous",
+    "apply": "Appliquer"
+  },
+  "paymentError": {
+    "title": "Paiement non abouti",
+    "body": "Aucun montant n'a été débité. Tu peux réessayer, ou restaurer un achat antérieur.",
+    "retry": "Réessayer",
+    "restore": "Restaurer mes achats"
+  },
+  "notifPermission": {
+    "context": "Active les notifications pour recevoir un rappel le jour J — tes dates restent sur ton téléphone.",
+    "systemTitle": "« Bientôt » souhaite envoyer des notifications",
+    "systemBody": "Les notifications peuvent inclure des alertes, des sons et des pastilles d'icône. Tu peux les configurer dans Réglages.",
+    "deny": "Ne pas autoriser",
+    "allow": "Autoriser"
+  },
+  "passesEmpty": {
+    "title": "Aucune date passée",
+    "subtitle": "Profite du moment présent."
+  },
   "passes": {
     "heroCount": "{count} dates vécues cette année",
     "heroSubtitle": "Petits et grands moments qui ont compté.",

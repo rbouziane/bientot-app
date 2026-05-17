@@ -179,6 +179,16 @@ const EventsListScreen = memo(() => {
             }
           >
             {hasPastContent && <PassesHero count={pastThisYearCount} />}
+            {!hasPastContent && (
+              <View style={styles.pastEmpty}>
+                <Text style={styles.pastEmptyTitle}>
+                  {translate('passesEmpty.title')}
+                </Text>
+                <Text style={styles.pastEmptySubtitle}>
+                  {translate('passesEmpty.subtitle')}
+                </Text>
+              </View>
+            )}
             {pastGroups.map(group => (
               <View key={group.key} style={styles.group}>
                 <Text style={styles.groupLabel}>
@@ -230,6 +240,22 @@ const styles = StyleSheet.create({
   },
   groupList: {
     gap: spacing.md,
+  },
+  pastEmpty: {
+    alignItems: 'center',
+    paddingTop: spacing.huge,
+    paddingHorizontal: spacing.xl,
+    gap: spacing.sm,
+  },
+  pastEmptyTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.textPrimary,
+  },
+  pastEmptySubtitle: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
 });
 

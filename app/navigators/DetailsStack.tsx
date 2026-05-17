@@ -12,10 +12,13 @@ import GroupsScreen from '~features/groups/screens/groups-screen';
 import HelpScreen from '~features/help/screens/help-screen';
 import IconPickerScreen from '~features/events/screens/icon-picker-screen';
 import LanguageScreen from '~features/settings/screens/language-screen';
+import NotifPermissionScreen from '~features/events/screens/notif-permission-screen';
 import NotificationsScreen from '~features/settings/screens/notifications-screen';
+import PaymentErrorScreen from '~features/events/screens/payment-error-screen';
 import PaywallScreen from '~features/paywall/screens/paywall-screen';
 import ShareCardScreen from '~features/events/screens/share-card-screen';
-import { HIDE_HEADER } from './screen-options';
+import SortFilterScreen from '~features/events/screens/sort-filter-screen';
+import { HIDE_HEADER, TRANSPARENT_MODAL } from './screen-options';
 
 export type DetailsStackParamList = {
   [SCREEN_NAME.EVENT_DETAIL]: { eventId: string };
@@ -32,6 +35,9 @@ export type DetailsStackParamList = {
   [SCREEN_NAME.GROUPS]: undefined;
   [SCREEN_NAME.SHARE_CARD]: { eventId: string };
   [SCREEN_NAME.DELETE_CONFIRM]: { eventId: string };
+  [SCREEN_NAME.SORT_FILTER]: undefined;
+  [SCREEN_NAME.PAYMENT_ERROR]: undefined;
+  [SCREEN_NAME.NOTIF_PERMISSION]: undefined;
 };
 
 const Stack = createNativeStackNavigator<DetailsStackParamList>();
@@ -76,6 +82,22 @@ const DetailsStack = memo(() => {
       <Stack.Screen
         name={SCREEN_NAME.DELETE_CONFIRM}
         component={DeleteConfirmScreen}
+        options={TRANSPARENT_MODAL}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.SORT_FILTER}
+        component={SortFilterScreen}
+        options={TRANSPARENT_MODAL}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.PAYMENT_ERROR}
+        component={PaymentErrorScreen}
+        options={TRANSPARENT_MODAL}
+      />
+      <Stack.Screen
+        name={SCREEN_NAME.NOTIF_PERMISSION}
+        component={NotifPermissionScreen}
+        options={TRANSPARENT_MODAL}
       />
     </Stack.Navigator>
   );

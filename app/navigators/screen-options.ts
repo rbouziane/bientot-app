@@ -32,3 +32,10 @@ export const HIDE_HEADER: NativeStackNavigationOptions = {
   headerShown: false,
   contentStyle: { backgroundColor: 'transparent' },
 };
+
+export const TRANSPARENT_MODAL: NativeStackNavigationOptions = {
+  headerShown: false,
+  presentation: 'transparentModal',
+  animation: 'fade',
+  contentStyle: { backgroundColor: 'transparent' },
+};
