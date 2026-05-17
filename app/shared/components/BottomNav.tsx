@@ -1,11 +1,23 @@
-import { memo, ReactNode, useCallback } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { memo, useCallback, useEffect } from 'react';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import Animated, {
+  Easing,
+  FadeIn,
+  FadeOut,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import { NavigationRoute, ParamListBase } from '@react-navigation/native';
+import EventsIcon from '~shared/assets/icons/nav/events.svg';
+import SettingsIcon from '~shared/assets/icons/nav/settings.svg';
+import WidgetsIcon from '~shared/assets/icons/nav/widgets.svg';
 import { STACK_NAME } from '~shared/constants/Screen';
-import { colors, radius, shadows, spacing } from '~shared/theme';
+import { colors, shadows, spacing } from '~shared/theme';
 
 type NavTabId = 'events' | 'widgets' | 'settings';
 
@@ -21,105 +33,20 @@ const TABS: TabSpec[] = [
   { id: 'settings', label: 'Réglages', stack: STACK_NAME.SETTINGS_STACK },
 ];
 
-const renderIcon = (id: NavTabId, color: string) => {
-  if (id === 'events') {
-    return (
-      <Svg width={20} height={20} viewBox="0 0 22 22" fill="none">
-        <Rect
-          x={3}
-          y={4.5}
-          width={16}
-          height={14}
-          rx={3}
-          stroke={color}
-          strokeWidth={1.8}
-        />
-        <Path d="M3 9h16" stroke={color} strokeWidth={1.8} />
-        <Path
-          d="M7 3v3M15 3v3"
-          stroke={color}
-          strokeWidth={1.8}
-          strokeLinecap="round"
-        />
-        <Circle cx={8} cy={13.5} r={1.2} fill={color} />
-        <Circle cx={14} cy={13.5} r={1.2} fill={color} />
-      </Svg>
-    );
-  }
-
-  if (id === 'widgets') {
-    return (
-      <Svg width={20} height={20} viewBox="0 0 22 22" fill="none">
-        <Rect
-          x={3}
-          y={3}
-          width={7}
-          height={7}
-          rx={1.8}
-          stroke={color}
-          strokeWidth={1.8}
-        />
-        <Rect
-          x={12}
-          y={3}
-          width={7}
-          height={7}
-          rx={1.8}
-          stroke={color}
-          strokeWidth={1.8}
-        />
-        <Rect
-          x={3}
-          y={12}
-          width={7}
-          height={7}
-          rx={1.8}
-          stroke={color}
-          strokeWidth={1.8}
-        />
-        <Rect x={12} y={12} width={7} height={7} rx={1.8} fill={color} />
-      </Svg>
-    );
-  }
-
-  const dotFill = color === colors.textOnDark ? colors.inkMid : colors.surface;
-  return (
-    <Svg width={20} height={20} viewBox="0 0 22 22" fill="none">
-      <Path
-        d="M3 6h11M3 11h8M3 16h13"
-        stroke={color}
-        strokeWidth={1.8}
-        strokeLinecap="round"
-      />
-      <Circle
-        cx={16}
-        cy={6}
-        r={2.2}
-        fill={dotFill}
-        stroke={color}
-        strokeWidth={1.8}
-      />
-      <Circle
-        cx={13}
-        cy={11}
-        r={2.2}
-        fill={dotFill}
-        stroke={color}
-        strokeWidth={1.8}
-      />
-      <Circle
-        cx={18}
-        cy={16}
-        r={2.2}
-        fill={dotFill}
-        stroke={color}
-        strokeWidth={1.8}
-      />
-    </Svg>
-  );
+const ICON_BY_ID = {
+  events: EventsIcon,
+  widgets: WidgetsIcon,
+  settings: SettingsIcon,
 };
 
 const INK_COLORS = [colors.inkStart, colors.inkMid, colors.inkEnd];
+
+const ICON_SIZE = 20;
+const TAB_RADIUS = 24;
+const TRANSITION_DURATION = 280;
+const TRANSITION_EASING = Easing.bezier(0.2, 0.7, 0.3, 1);
+const FLEX_INACTIVE = 1;
+const FLEX_ACTIVE = 1.45;
 
 type TabItemProps = {
   spec: TabSpec;
@@ -128,70 +55,81 @@ type TabItemProps = {
 };
 
 const TabItem = memo((itemProps: TabItemProps) => {
+  const Icon = ICON_BY_ID[itemProps.spec.id];
+
   const handlePress = useCallback(() => {
     itemProps.onPress(itemProps.spec.id);
   }, [itemProps.onPress, itemProps.spec.id]);
 
-  const iconColor = itemProps.isActive ? colors.textOnDark : colors.textPrimary;
-  const flexValue = itemProps.isActive ? 1.45 : 1;
+  const progress = useSharedValue(itemProps.isActive ? 1 : 0);
 
-  if (itemProps.isActive) {
-    return (
+  useEffect(() => {
+    progress.value = withTiming(itemProps.isActive ? 1 : 0, {
+      duration: TRANSITION_DURATION,
+      easing: TRANSITION_EASING,
+    });
+  }, [itemProps.isActive, progress]);
+
+  const flexStyle = useAnimatedStyle(() => ({
+    flex: interpolate(progress.value, [0, 1], [FLEX_INACTIVE, FLEX_ACTIVE]),
+  }));
+
+  const fillStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+  }));
+
+  const darkIconStyle = useAnimatedStyle(() => ({
+    opacity: 1 - progress.value,
+  }));
+
+  const lightIconStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+  }));
+
+  return (
+    <Animated.View style={[styles.tab, flexStyle]}>
       <Pressable
         onPress={handlePress}
-        style={({ pressed }) => [
-          styles.tabBase,
-          { flex: flexValue },
-          pressed && styles.tabPressed,
-        ]}
+        style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
       >
-        <LinearGradient
-          colors={INK_COLORS}
-          locations={[0, 0.6, 1]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={styles.tabActiveFill}
-        >
-          {renderIcon(itemProps.spec.id, iconColor)}
-          <Text style={styles.activeLabel}>{itemProps.spec.label}</Text>
-        </LinearGradient>
+        <Animated.View pointerEvents="none" style={[styles.fill, fillStyle]}>
+          <LinearGradient
+            colors={INK_COLORS}
+            locations={[0, 0.6, 1]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.fillGradient}
+          />
+        </Animated.View>
+        <View style={styles.row}>
+          <View style={styles.iconSlot}>
+            <Animated.View style={[styles.iconLayer, darkIconStyle]}>
+              <Icon
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+                color={colors.textPrimary}
+              />
+            </Animated.View>
+            <Animated.View style={[styles.iconLayer, lightIconStyle]}>
+              <Icon
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+                color={colors.textOnDark}
+              />
+            </Animated.View>
+          </View>
+          {itemProps.isActive && (
+            <Animated.Text
+              entering={FadeIn.duration(160).delay(80)}
+              exiting={FadeOut.duration(80)}
+              style={styles.label}
+            >
+              {itemProps.spec.label}
+            </Animated.Text>
+          )}
+        </View>
       </Pressable>
-    );
-  }
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      style={({ pressed }) => [
-        styles.tabBase,
-        styles.tabInactive,
-        { flex: flexValue },
-        pressed && styles.tabPressed,
-      ]}
-    >
-      {renderIcon(itemProps.spec.id, iconColor)}
-    </Pressable>
-  );
-});
-
-const Container = memo((containerProps: { children: ReactNode }) => {
-  if (Platform.OS === 'ios') {
-    return (
-      <BlurView
-        blurType="xlight"
-        blurAmount={20}
-        reducedTransparencyFallbackColor={colors.surfaceTranslucentStrong}
-        style={[styles.shell, styles.shellIos]}
-      >
-        {containerProps.children}
-      </BlurView>
-    );
-  }
-
-  return (
-    <View style={[styles.shell, styles.shellAndroid]}>
-      {containerProps.children}
-    </View>
+    </Animated.View>
   );
 });
 
@@ -206,7 +144,8 @@ const BottomNav = memo((props: BottomTabBarProps) => {
       }
 
       const target = props.state.routes.find(
-        route => route.name === spec.stack,
+        (route: NavigationRoute<ParamListBase, string>) =>
+          route.name === spec.stack,
       );
       if (target == null) {
         return;
@@ -227,18 +166,29 @@ const BottomNav = memo((props: BottomTabBarProps) => {
     [props.navigation, props.state.routes],
   );
 
+  const tabs = TABS.map(spec => (
+    <TabItem
+      key={spec.id}
+      spec={spec}
+      isActive={spec.stack === activeRouteName}
+      onPress={handlePress}
+    />
+  ));
+
   return (
     <View pointerEvents="box-none" style={styles.root}>
-      <Container>
-        {TABS.map(spec => (
-          <TabItem
-            key={spec.id}
-            spec={spec}
-            isActive={spec.stack === activeRouteName}
-            onPress={handlePress}
-          />
-        ))}
-      </Container>
+      {Platform.OS === 'ios' ? (
+        <BlurView
+          blurType="xlight"
+          blurAmount={20}
+          reducedTransparencyFallbackColor={colors.surfaceTranslucentStrong}
+          style={[styles.shell, styles.shellIos]}
+        >
+          {tabs}
+        </BlurView>
+      ) : (
+        <View style={[styles.shell, styles.shellAndroid]}>{tabs}</View>
+      )}
     </View>
   );
 });
@@ -267,33 +217,58 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.borderSoft,
   },
-  tabBase: {
+  tab: {
     minHeight: 44,
-    borderRadius: radius.xxxl,
+    borderRadius: TAB_RADIUS,
     overflow: 'hidden',
   },
-  tabInactive: {
-    paddingVertical: 11,
-    paddingHorizontal: 14,
+  pressable: {
+    flex: 1,
+    minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabActiveFill: {
+  fill: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: TAB_RADIUS,
+    overflow: 'hidden',
+  },
+  fillGradient: {
     flex: 1,
-    paddingVertical: 11,
-    paddingHorizontal: 14,
+    borderRadius: TAB_RADIUS,
+  },
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
+    paddingVertical: 11,
+    paddingHorizontal: 14,
   },
-  activeLabel: {
+  iconSlot: {
+    width: ICON_SIZE,
+    height: ICON_SIZE,
+  },
+  iconLayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  label: {
     fontSize: 14,
     fontWeight: '600',
     letterSpacing: -0.1,
     color: colors.textOnDark,
   },
-  tabPressed: {
+  pressed: {
     opacity: 0.85,
   },
 });
