@@ -9,6 +9,8 @@ import ScreenContainer from '~shared/components/ScreenContainer';
 import { COLOR_KEY } from '~shared/constants/ColorKey';
 import { PALETTE } from '~shared/constants/Palette';
 import { SCREEN_NAME, STACK_NAME } from '~shared/constants/Screen';
+import { STORAGE_KEY } from '~shared/constants/Storage';
+import { getMMKV } from '~shared/storage/mmkv';
 import { colors, radius, shadows, spacing, tabular } from '~shared/theme';
 import { hexA } from '~shared/utils/colorUtils';
 import { translate } from '~i18n/translate';
@@ -222,7 +224,7 @@ const OnboardingScreen = memo(() => {
   const [page, setPage] = useState(0);
 
   const goToHome = useCallback(() => {
-    // TODO: persist ONBOARDING_COMPLETED in MMKV when wired.
+    getMMKV().set(STORAGE_KEY.ONBOARDING_COMPLETED, true);
     NavigatorUtils.reset(STACK_NAME.TAB_NAVIGATOR);
   }, []);
 
